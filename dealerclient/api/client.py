@@ -34,7 +34,16 @@ class Client(object):
         self.workspaces = workspaces.WorkspaceManager(http_client)
 
 
-def create_session(base_url, **kwargs):
+def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):
+    """Creates a new session for cloud-dealer client.
+
+    :param base_url: dealer base url.
+    :param username: username
+    :param password: password
+    :param client_id: client_id
+    :param client_secret: client_secret
+    :return: request.Session object.
+    """
     username = kwargs.get('username')
     password = kwargs.get('password')
     client_id = kwargs.get('client_id')
