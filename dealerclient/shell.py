@@ -14,6 +14,7 @@ from cliff import commandmanager
 
 from dealerclient.api import client
 import dealerclient.commands.organizations
+import dealerclient.commands.projects
 import dealerclient.commands.workspaces
 
 
@@ -290,6 +291,11 @@ class DealerShell(app.App):
             'org-create': dealerclient.commands.organizations.Create,
             'org-delete': dealerclient.commands.organizations.Delete,
             'org-update': dealerclient.commands.organizations.Update,
+            'project-list': dealerclient.commands.projects.List,
+            'project-get': dealerclient.commands.projects.Get,
+            'project-create': dealerclient.commands.projects.Create,
+            'project-delete': dealerclient.commands.projects.Delete,
+            'project-update': dealerclient.commands.projects.Update,
         }
 
 

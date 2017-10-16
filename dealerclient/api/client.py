@@ -4,6 +4,7 @@ import six
 
 from dealerclient.api import httpclient
 from dealerclient.api import organizations
+from dealerclient.api import projects
 from dealerclient.api import workspaces
 from dealerclient import exceptions
 
@@ -34,6 +35,7 @@ class Client(object):
 
         self.workspaces = workspaces.WorkspaceManager(http_client)
         self.organizations = organizations.OrganizationManager(http_client)
+        self.projects = projects.ProjectManager(http_client)
 
 
 def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):
