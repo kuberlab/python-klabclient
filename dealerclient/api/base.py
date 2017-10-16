@@ -78,7 +78,7 @@ class ResourceManager(object):
 
         resp = self.http_client.post(url, data)
 
-        if resp.status_code != 201:
+        if resp.status_code >= 400:
             self._raise_api_exception(resp)
 
         return self.resource_class(self, extract_json(resp, response_key))
@@ -114,7 +114,7 @@ class ResourceManager(object):
     def _delete(self, url):
         resp = self.http_client.delete(url)
 
-        if resp.status_code != 204:
+        if resp.status_code >= 400:
             self._raise_api_exception(resp)
 
     def _plurify_resource_name(self):

@@ -13,6 +13,7 @@ from cliff import command
 from cliff import commandmanager
 
 from dealerclient.api import client
+import dealerclient.commands.organizations
 import dealerclient.commands.workspaces
 
 
@@ -284,9 +285,11 @@ class DealerShell(app.App):
             'bash-completion': BashCompletionCommand,
             'workspace-list': dealerclient.commands.workspaces.List,
             'workspace-get': dealerclient.commands.workspaces.Get,
-            'workspace-create': dealerclient.commands.workspaces.Create,
-            'workspace-delete': dealerclient.commands.workspaces.Delete,
-            'workspace-update': dealerclient.commands.workspaces.Update,
+            'org-list': dealerclient.commands.organizations.List,
+            'org-get': dealerclient.commands.organizations.Get,
+            'org-create': dealerclient.commands.organizations.Create,
+            'org-delete': dealerclient.commands.organizations.Delete,
+            'org-update': dealerclient.commands.organizations.Update,
         }
 
 
