@@ -12,11 +12,13 @@ from cliff import app
 from cliff import command
 from cliff import commandmanager
 
+import dealerclient
 from dealerclient.api import client
-import dealerclient.commands.apps
-import dealerclient.commands.organizations
-import dealerclient.commands.projects
-import dealerclient.commands.workspaces
+from dealerclient.commands import apps
+from dealerclient.commands import organizations
+from dealerclient.commands import projects
+from dealerclient.commands import sharedclusters
+from dealerclient.commands import workspaces
 
 
 def env(*args, **kwargs):
@@ -274,25 +276,32 @@ class DealerShell(app.App):
     def _get_commands():
         return {
             'bash-completion': BashCompletionCommand,
-            'workspace-list': dealerclient.commands.workspaces.List,
-            'workspace-get': dealerclient.commands.workspaces.Get,
+            'workspace-list': workspaces.List,
+            'workspace-get': workspaces.Get,
 
-            'org-list': dealerclient.commands.organizations.List,
-            'org-get': dealerclient.commands.organizations.Get,
-            'org-create': dealerclient.commands.organizations.Create,
-            'org-delete': dealerclient.commands.organizations.Delete,
-            'org-update': dealerclient.commands.organizations.Update,
+            'org-list': organizations.List,
+            'org-get': organizations.Get,
+            'org-create': organizations.Create,
+            'org-delete': organizations.Delete,
+            'org-update': organizations.Update,
 
-            'project-list': dealerclient.commands.projects.List,
-            'project-get': dealerclient.commands.projects.Get,
-            'project-create': dealerclient.commands.projects.Create,
-            'project-delete': dealerclient.commands.projects.Delete,
-            'project-update': dealerclient.commands.projects.Update,
+            'project-list': projects.List,
+            'project-get': projects.Get,
+            'project-create': projects.Create,
+            'project-delete': projects.Delete,
+            'project-update': projects.Update,
 
-            'app-list': dealerclient.commands.apps.List,
-            'app-get': dealerclient.commands.apps.Get,
-            'app-get-config': dealerclient.commands.apps.GetConfig,
-            'app-delete': dealerclient.commands.apps.Delete,
+            'app-list': apps.List,
+            'app-get': apps.Get,
+            'app-get-config': apps.GetConfig,
+            'app-delete': apps.Delete,
+
+            'shared-cluster-available-list': sharedclusters.ListAvailable,
+            'shared-cluster-own-list': sharedclusters.ListOwn,
+            'shared-cluster-available-get': sharedclusters.GetAvailable,
+            'shared-cluster-own-get': sharedclusters.GetOwn,
+            'shared-cluster-available-delete': sharedclusters.DeleteAvailable,
+            'shared-cluster-own-delete': sharedclusters.DeleteOwn,
         }
 
 

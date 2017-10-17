@@ -6,6 +6,7 @@ from dealerclient.api import apps
 from dealerclient.api import httpclient
 from dealerclient.api import organizations
 from dealerclient.api import projects
+from dealerclient.api import sharedclusters
 from dealerclient.api import workspaces
 from dealerclient import exceptions
 
@@ -37,7 +38,8 @@ class Client(object):
         self.workspaces = workspaces.WorkspaceManager(http_client)
         self.organizations = organizations.OrganizationManager(http_client)
         self.projects = projects.ProjectManager(http_client)
-        self.mlapps = apps.AppManager(http_client)
+        self.apps = apps.AppManager(http_client)
+        self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
 
 
 def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):

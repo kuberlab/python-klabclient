@@ -36,7 +36,7 @@ class DealerLister(command.Lister):
         data = [f(r)[1] for r in ret]
 
         if data:
-            return f()[0], data
+            return f(ret[0])[0], data
         else:
             return f()
 

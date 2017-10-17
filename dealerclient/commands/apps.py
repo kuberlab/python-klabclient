@@ -100,7 +100,7 @@ class List(base.DealerLister):
     def _get_resources(self, args):
         dealer_client = self.app.client
 
-        return dealer_client.mlapps.list(args.workspace)
+        return dealer_client.apps.list(args.workspace)
 
 
 class Get(show.ShowOne):
@@ -119,7 +119,7 @@ class Get(show.ShowOne):
 
     def take_action(self, args):
         dealer_client = self.app.client
-        mlapp = dealer_client.mlapps.get(args.workspace, args.name)
+        mlapp = dealer_client.apps.get(args.workspace, args.name)
 
         return format(mlapp)
 
@@ -140,7 +140,7 @@ class GetConfig(command.Command):
 
     def take_action(self, args):
         dealer_client = self.app.client
-        mlapp = dealer_client.mlapps.get(args.workspace, args.name)
+        mlapp = dealer_client.apps.get(args.workspace, args.name)
 
         self.app.stdout.write(yaml.safe_dump(mlapp.Configuration))
 
@@ -175,7 +175,7 @@ class Delete(command.Command):
         dealer_client = self.app.client
 
         utils.do_action_on_many(
-            lambda s: dealer_client.mlapps.delete(
+            lambda s: dealer_client.apps.delete(
                 args.workspace, s, args.force
             ),
             args.name,
