@@ -187,7 +187,7 @@ class DealerShell(app.App):
             '--dealer-url',
             action='store',
             dest='dealer_url',
-            default=env('DEALER_URL') or 'https://dev.kuberlab.io/api/v0.2',
+            default=env('DEALER_URL') or 'https://go.kuberlab.io/api/v0.2',
             help='Dealer API base url (Env: DEALER_URL)'
         )
 

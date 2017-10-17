@@ -12,7 +12,7 @@ from dealerclient.api import workspaces
 from dealerclient import exceptions
 
 
-_DEFAULT_DEALER_URL = "https://dev.kuberlab.io/api/v0.2"
+_DEFAULT_DEALER_URL = "https://go.kuberlab.io/api/v0.2"
 
 
 class Client(object):
