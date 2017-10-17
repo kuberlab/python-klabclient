@@ -82,7 +82,7 @@ def format(mlapp=None, lister=False):
 
 
 class List(base.DealerLister):
-    """List all mlapps."""
+    """List all apps in the workspace."""
 
     def _get_format_function(self):
         return format_list
@@ -104,7 +104,7 @@ class List(base.DealerLister):
 
 
 class Get(show.ShowOne):
-    """Show specific mlapp."""
+    """Show specific app."""
 
     def get_parser(self, prog_name):
         parser = super(Get, self).get_parser(prog_name)
@@ -125,7 +125,7 @@ class Get(show.ShowOne):
 
 
 class GetConfig(command.Command):
-    """Show specific mlapp config."""
+    """Show specific app config."""
 
     def get_parser(self, prog_name):
         parser = super(GetConfig, self).get_parser(prog_name)
@@ -146,7 +146,7 @@ class GetConfig(command.Command):
 
 
 class Delete(command.Command):
-    """Delete mlapp."""
+    """Delete app."""
 
     def get_parser(self, prog_name):
         parser = super(Delete, self).get_parser(prog_name)

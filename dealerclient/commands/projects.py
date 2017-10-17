@@ -48,7 +48,7 @@ def format(project=None, lister=False):
 
 
 class List(base.DealerLister):
-    """List all projects."""
+    """List all projects in the workspace."""
 
     def _get_format_function(self):
         return format_list

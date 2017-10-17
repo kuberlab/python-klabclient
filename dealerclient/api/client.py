@@ -46,17 +46,19 @@ def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):
     :param base_url: dealer base url.
     :param username: username
     :param password: password
-    :param client_id: client_id
-    :param client_secret: client_secret
+    :param token: API token created via API
     :return: request.Session object.
     """
     username = kwargs.get('username')
     password = kwargs.get('password')
-    client_id = kwargs.get('client_id')
-    client_secret = kwargs.get('client_secret')
+    token = kwargs.get('token')
 
     ses = requests.Session()
-    if username and password:
+    if token:
+        ses = requests.Session()
+        ses.headers['Authorization'] = 'Bearer %s' % token
+        return ses
+    elif username and password:
         auth_url = '%s/auth/login' % base_url
         resp = ses.post(
             auth_url,
@@ -68,10 +70,7 @@ def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):
                 'Invalid auth: %s.' % resp.content
             )
         return ses
-    elif client_id and client_secret:
-        ses = requests.Session()
-        raise exceptions.DealerClientException('Not supported yet.')
 
     raise exceptions.DealerClientException(
-        "Provide either username and password or client_id and client_secret."
+        "Provide either token or username and password."
     )

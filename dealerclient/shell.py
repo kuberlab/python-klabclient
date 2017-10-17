@@ -214,21 +214,11 @@ class DealerShell(app.App):
         )
 
         parser.add_argument(
-            '--client-id',
+            '--token',
             action='store',
-            dest='client_id',
-            default=env('DEALER_CLIENT_ID'),
-            help='Client ID.'
-                 ' (Env: DEALER_CLIENT_ID)'
-        )
-
-        parser.add_argument(
-            '--client-secret',
-            action='store',
-            dest='client_secret',
-            default=env('DEALER_CLIENT_SECRET'),
-            help='Client secret'
-                 ' (Env: DEALER_CLIENT_SECRET)'
+            default=env('DEALER_TOKEN'),
+            help='API token used to authenticate in cloud-dealer.'
+                 ' (Env: DEALER_TOKEN)'
         )
 
         return parser
@@ -260,8 +250,7 @@ class DealerShell(app.App):
             username=self.options.username,
             password=self.options.password,
             insecure=self.options.insecure,
-            client_id=self.options.client_id,
-            client_secret=self.options.client_secret,
+            token=self.options.token,
         )
         self.client = client.Client(
             session,
