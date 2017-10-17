@@ -3,6 +3,7 @@ import requests
 import six
 
 from dealerclient.api import apps
+from dealerclient.api import charts
 from dealerclient.api import httpclient
 from dealerclient.api import organizations
 from dealerclient.api import projects
@@ -40,6 +41,7 @@ class Client(object):
         self.projects = projects.ProjectManager(http_client)
         self.apps = apps.AppManager(http_client)
         self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
+        self.charts = charts.CatalogManager(http_client)
 
 
 def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):

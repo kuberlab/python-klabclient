@@ -15,6 +15,7 @@ from cliff import commandmanager
 import dealerclient
 from dealerclient.api import client
 from dealerclient.commands import apps
+from dealerclient.commands import charts
 from dealerclient.commands import organizations
 from dealerclient.commands import projects
 from dealerclient.commands import sharedclusters
@@ -302,6 +303,11 @@ class DealerShell(app.App):
             'shared-cluster-own-get': sharedclusters.GetOwn,
             'shared-cluster-available-delete': sharedclusters.DeleteAvailable,
             'shared-cluster-own-delete': sharedclusters.DeleteOwn,
+
+            'catalog': charts.Catalog,
+            'chart-list': charts.List,
+            'chart-get': charts.Get,
+            'chart-delete': charts.Delete,
         }
 
 
