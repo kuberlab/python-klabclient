@@ -1,5 +1,5 @@
-
 from dealerclient.api import base
+from dealerclient.api import charts
 
 
 class App(base.Resource):
@@ -34,4 +34,20 @@ class AppManager(base.ResourceManager):
 
         self._delete(
             '/workspace/%s/application/%s?%s' % (workspace, name, force)
+        )
+
+    def install(self, from_workspace, to_workspace, chart_name,
+                project, app_name, values, version='latest',
+                cluster_name=None, shared_cluster_id=None, env="master"):
+        return charts.ChartManager(self.http_client).install(
+            from_workspace,
+            to_workspace,
+            chart_name,
+            project,
+            app_name,
+            values,
+            version,
+            cluster_name,
+            shared_cluster_id,
+            env
         )

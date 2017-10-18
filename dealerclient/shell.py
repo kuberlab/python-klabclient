@@ -295,6 +295,7 @@ class DealerShell(app.App):
             'app-list': apps.List,
             'app-get': apps.Get,
             'app-get-config': apps.GetConfig,
+            'app-install': apps.Install,
             'app-delete': apps.Delete,
 
             'shared-cluster-available-list': sharedclusters.ListAvailable,
@@ -306,7 +307,12 @@ class DealerShell(app.App):
 
             'catalog': charts.Catalog,
             'chart-list': charts.List,
+            'chart-download': charts.Download,
+            'chart-version-list': charts.ListVersions,
             'chart-get': charts.Get,
+            'chart-values': charts.GetValues,
+            'chart-create': charts.Create,
+            'chart-install': charts.Install,
             'chart-delete': charts.Delete,
         }
 

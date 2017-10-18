@@ -4,6 +4,7 @@ from cliff import command
 from cliff import show
 
 from dealerclient.commands import base
+from dealerclient.commands import charts
 from dealerclient import utils
 
 
@@ -134,6 +135,10 @@ class GetConfig(command.Command):
         mlapp = dealer_client.apps.get(args.workspace, args.name)
 
         self.app.stdout.write(yaml.safe_dump(mlapp.Configuration))
+
+
+class Install(charts.Install):
+    pass
 
 
 class Delete(command.Command):

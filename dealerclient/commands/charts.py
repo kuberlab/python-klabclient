@@ -1,8 +1,16 @@
+import json
+import textwrap
+import yaml
+
 from cliff import command
 from cliff import show
+from six import moves
 
 from dealerclient.commands import base
 from dealerclient import utils
+
+
+urllib = moves.urllib.request
 
 
 def format_list(chart=None):
@@ -74,7 +82,7 @@ def format(chart=None, lister=False):
             )
             data = data + (
                 chart.Description,
-                chart.Picture,
+                '\n'.join(textwrap.wrap(getattr(chart, 'Picture', ''), 90)),
                 chart.Published,
                 chart.RepositoryID,
                 chart.RepositoryURL,
@@ -84,12 +92,19 @@ def format(chart=None, lister=False):
                 chart.Star,
                 chart.InstallConfig,
                 chart.Keywords,
-                chart.Info,
+                json.dumps(getattr(chart, 'Info', {}), indent=4),
                 chart.Broken,
                 chart.DownloadURL,
             )
     else:
         data = (tuple('<none>' for _ in range(len(columns))),)
+
+    return columns, data
+
+
+def format_version(v=None):
+    columns = ('Version',)
+    data = (v.Version,)
 
     return columns, data
 
@@ -159,12 +174,43 @@ class List(Catalog):
         )
 
 
+class ListVersions(base.DealerLister):
+    """List charts in the specific workspace."""
+
+    def _get_format_function(self):
+        return format_version
+
+    def get_parser(self, prog_name):
+        parser = super(ListVersions, self).get_parser(prog_name)
+
+        base.add_workspace_arg(parser)
+        parser.add_argument(
+            'name',
+            help='Chart name.'
+        )
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+
+        return dealer_client.charts.list_versions(
+            args.workspace,
+            args.name
+        )
+
+
 class Get(show.ShowOne):
     """Get specific chart by name."""
 
     def get_parser(self, prog_name):
         parser = super(Get, self).get_parser(prog_name)
         base.add_workspace_arg(parser)
+        parser.add_argument(
+            '--chart-version',
+            dest='version',
+            help='Chart version.'
+        )
         parser.add_argument(
             'name',
             help='Chart name.'
@@ -175,9 +221,202 @@ class Get(show.ShowOne):
     @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
-        chart = dealer_client.charts.get(args.workspace, args.name)
+        chart = dealer_client.charts.get(
+            args.workspace, args.name, args.version
+        )
 
         return format(chart)
+
+
+class GetValues(command.Command):
+    """Get specific chart by name."""
+
+    def get_parser(self, prog_name):
+        parser = super(GetValues, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument(
+            '--chart-version',
+            dest='version',
+            default='latest',
+            help='Chart version.'
+        )
+        parser.add_argument(
+            'name',
+            help='Chart name.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        values = dealer_client.charts.get_values(
+            args.workspace, args.name, args.version
+        )
+
+        self.app.stdout.write(values)
+        self.app.stdout.write('\n')
+
+
+class Download(command.Command):
+    """Download chart to the specific location."""
+
+    def get_parser(self, prog_name):
+        parser = super(Download, self).get_parser(prog_name)
+
+        base.add_workspace_arg(parser)
+        parser.add_argument(
+            '--chart-version',
+            dest='version',
+            help='Chart version.'
+        )
+        parser.add_argument(
+            '--output',
+            '-o',
+            help='Output file name.'
+        )
+
+        parser.add_argument(
+            'name',
+            help='Chart name.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        chart = dealer_client.charts.get(
+            args.workspace, args.name, args.version
+        )
+
+        url = chart.DownloadURL
+        output = args.output
+        if not output:
+            output = url.split('?')[0].split('/')[-1]
+
+        self.app.stdout.write('Saving %s to %s..\n' % (url, output))
+        downloader = urllib.URLopener()
+        downloader.retrieve(url, output)
+        self.app.stdout.write('Done.\n')
+
+
+class Create(show.ShowOne):
+    """Create a new chart from repository."""
+
+    def get_parser(self, prog_name):
+        parser = super(Create, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument(
+            '--name',
+            required=True,
+            help='New chart name.'
+        )
+        parser.add_argument(
+            '--repo-url',
+            required=True,
+            help='Chart source repository URL.'
+        )
+        parser.add_argument(
+            '--repo-dir',
+            help='Chart source repository Dir.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        chart = dealer_client.charts.create(
+            args.workspace, args.name, args.repo_url, args.repo_dir
+        )
+
+        return format(chart)
+
+
+class Install(show.ShowOne):
+    """Install a new chart on cluster."""
+
+    def get_parser(self, prog_name):
+        parser = super(Install, self).get_parser(prog_name)
+
+        parser.add_argument(
+            '--name',
+            required=True,
+            help='Chart name.'
+        )
+        parser.add_argument(
+            '--chart-workspace',
+            required=True,
+            help='Chart workspace name.'
+        )
+        parser.add_argument(
+            '--target-workspace',
+            required=True,
+            help='Target workspace name.'
+        )
+        parser.add_argument(
+            '--project',
+            required=True,
+            help='Project name.'
+        )
+        parser.add_argument(
+            '--target-application',
+            '-app',
+            required=True,
+            help='New application name.'
+        )
+        parser.add_argument(
+            '--chart-version',
+            default='latest',
+            help='Target chart version.'
+        )
+        parser.add_argument(
+            '--cluster-name',
+            help='Target cluster name.'
+        )
+        parser.add_argument(
+            '--shared-cluster-id',
+            help='Target shared cluster id.'
+        )
+        parser.add_argument(
+            '--env',
+            default='master',
+            help='Project environment (repo branch).'
+        )
+        parser.add_argument(
+            '--values',
+            # default='values.yaml',
+            help='Path to values.yaml.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        values = None
+        if args.values:
+            with open(args.values) as f:
+                values = yaml.safe_load(f)
+
+        # from_workspace, to_workspace, chart_name,
+        #        project, app_name, values, version='latest',
+        #        cluster_name=None, shared_cluster_id=None, env="master"
+        app = dealer_client.charts.install(
+            args.chart_workspace,
+            args.target_workspace,
+            args.name,
+            args.project,
+            args.target_application,
+            values,
+            args.chart_version,
+            args.cluster_name,
+            args.shared_cluster_id,
+            args.env,
+        )
+
+        return format(app)
 
 
 class Delete(command.Command):
