@@ -56,13 +56,10 @@ class List(base.DealerLister):
     def get_parser(self, prog_name):
         parser = super(List, self).get_parser(prog_name)
 
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name to search projects in.'
-        )
+        base.add_workspace_arg(parser)
         return parser
 
+    @base.workspace_aware
     def _get_resources(self, args):
         dealer_client = self.app.client
 
@@ -74,15 +71,12 @@ class Get(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(Get, self).get_parser(prog_name)
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name to search projects in.'
-        )
+        base.add_workspace_arg(parser)
         parser.add_argument('name', help='Project name.')
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
         project = dealer_client.projects.get(args.workspace, args.name)
@@ -97,11 +91,7 @@ class Create(show.ShowOne):
         parser = super(Create, self).get_parser(prog_name)
         # workspace, name, display_name=None,
         # env=None, repo_url=None, repo_dir=None
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name.'
-        )
+        base.add_workspace_arg(parser)
         parser.add_argument(
             '--name',
             required=True,
@@ -132,6 +122,7 @@ class Create(show.ShowOne):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
         project = dealer_client.projects.create(
@@ -152,11 +143,7 @@ class Delete(command.Command):
     def get_parser(self, prog_name):
         parser = super(Delete, self).get_parser(prog_name)
 
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name.'
-        )
+        base.add_workspace_arg(parser)
 
         parser.add_argument(
             'name',
@@ -166,6 +153,7 @@ class Delete(command.Command):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
 
@@ -183,11 +171,7 @@ class Update(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(Update, self).get_parser(prog_name)
         # name, display_name=None, picture=None, url=None, phone=None
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name.'
-        )
+        base.add_workspace_arg(parser)
         parser.add_argument(
             '--name',
             required=True,
@@ -218,6 +202,7 @@ class Update(show.ShowOne):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
         project = dealer_client.projects.update(

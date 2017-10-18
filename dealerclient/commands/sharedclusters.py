@@ -68,10 +68,6 @@ class ListOwn(base.DealerLister):
 
     def get_parser(self, prog_name):
         parser = super(ListOwn, self).get_parser(prog_name)
-        parser.add_argument(
-            '--workspace',
-            help='Workspace name to search projects in.'
-        )
 
         return parser
 
@@ -86,15 +82,12 @@ class GetAvailable(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(GetAvailable, self).get_parser(prog_name)
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name to search projects in.'
-        )
+        base.add_workspace_arg(parser)
         parser.add_argument('id', help='Cluster id.')
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
         project = dealer_client.sharedclusters.get_available(
@@ -126,11 +119,7 @@ class DeleteAvailable(command.Command):
     def get_parser(self, prog_name):
         parser = super(DeleteAvailable, self).get_parser(prog_name)
 
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name.'
-        )
+        base.add_workspace_arg(parser)
 
         parser.add_argument(
             'id',
@@ -140,6 +129,7 @@ class DeleteAvailable(command.Command):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
 

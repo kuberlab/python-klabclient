@@ -1,16 +1,19 @@
 
 import abc
+import os
 import textwrap
 
-from osc_lib.command import command
+from cliff import lister
 import six
+
+from dealerclient import exceptions
 
 
 DEFAULT_LIMIT = 100
 
 
 @six.add_metaclass(abc.ABCMeta)
-class DealerLister(command.Lister):
+class DealerLister(lister.Lister):
     @abc.abstractmethod
     def _get_format_function(self):
         raise NotImplementedError
@@ -53,6 +56,27 @@ def wrap(string, width=25):
         return textwrap.fill(string, width)
     else:
         return string
+
+
+def add_workspace_arg(parser):
+    parser.add_argument(
+        '--workspace',
+        default=os.environ.get('DEALER_WORKSPACE'),
+        metavar='<workspace>',
+        help='Workspace name.'
+    )
+
+
+def workspace_aware(func):
+    def decorator(self, args):
+        if hasattr(args, 'workspace'):
+            if not args.workspace:
+                raise exceptions.IllegalArgumentException(
+                    "Provide workspace name via either --workspace "
+                    "parameter or DEALER_WORKSPACE env variable."
+                )
+        return func(self, args)
+    return decorator
 
 
 def get_filters(parsed_args):

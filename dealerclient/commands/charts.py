@@ -143,13 +143,10 @@ class List(Catalog):
     def get_parser(self, prog_name):
         parser = super(List, self).get_parser(prog_name)
 
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace to search chart in.'
-        )
+        base.add_workspace_arg(parser)
         return parser
 
+    @base.workspace_aware
     def _get_resources(self, args):
         dealer_client = self.app.client
 
@@ -167,11 +164,7 @@ class Get(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(Get, self).get_parser(prog_name)
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name to search chart in.'
-        )
+        base.add_workspace_arg(parser)
         parser.add_argument(
             'name',
             help='Chart name.'
@@ -179,6 +172,7 @@ class Get(show.ShowOne):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
         chart = dealer_client.charts.get(args.workspace, args.name)
@@ -192,11 +186,7 @@ class Delete(command.Command):
     def get_parser(self, prog_name):
         parser = super(Delete, self).get_parser(prog_name)
 
-        parser.add_argument(
-            '--workspace',
-            required=True,
-            help='Workspace name.'
-        )
+        base.add_workspace_arg(parser)
 
         parser.add_argument(
             'name',
@@ -206,6 +196,7 @@ class Delete(command.Command):
 
         return parser
 
+    @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
 
