@@ -70,7 +70,7 @@ class ChartManager(base.ResourceManager):
         if resp.status_code >= 400:
             self._raise_api_exception(resp)
 
-        return resp.content
+        return resp.text
 
     def delete(self, workspace, chart_name):
         url = '/workspace/%s/charts/%s' % (workspace, chart_name)

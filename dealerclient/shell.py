@@ -310,6 +310,7 @@ class DealerShell(app.App):
             'chart-download': charts.Download,
             'chart-version-list': charts.ListVersions,
             'chart-get': charts.Get,
+            'chart-get-yaml': charts.GetYaml,
             'chart-values': charts.GetValues,
             'chart-create': charts.Create,
             'chart-install': charts.Install,

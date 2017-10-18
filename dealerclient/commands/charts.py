@@ -258,6 +258,36 @@ class GetValues(command.Command):
         self.app.stdout.write('\n')
 
 
+class GetYaml(command.Command):
+    """Get Chart.yaml."""
+
+    def get_parser(self, prog_name):
+        parser = super(GetYaml, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument(
+            '--chart-version',
+            dest='version',
+            default='latest',
+            help='Chart version.'
+        )
+        parser.add_argument(
+            'name',
+            help='Chart name.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        chart_yaml = dealer_client.charts.get_yaml(
+            args.workspace, args.name, args.version
+        )
+
+        self.app.stdout.write(chart_yaml)
+        self.app.stdout.write('\n')
+
+
 class Download(command.Command):
     """Download chart to the specific location."""
 
