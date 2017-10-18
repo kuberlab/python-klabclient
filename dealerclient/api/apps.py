@@ -17,6 +17,10 @@ class App(base.Resource):
     # "ProjectDisplayName": "demotest"
 
 
+class AppDestination(base.Resource):
+    resource_name = 'AppDestination'
+
+
 class AppManager(base.ResourceManager):
     resource_class = App
 
@@ -35,6 +39,18 @@ class AppManager(base.ResourceManager):
         self._delete(
             '/workspace/%s/application/%s?%s' % (workspace, name, force)
         )
+
+    def get_destinations(self, workspace):
+        self._ensure_not_empty(workspace=workspace)
+
+        url = '/workspace/%s/appdestinations' % workspace
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return [
+            AppDestination(self, d) for d in base.extract_json(resp, None)
+        ]
 
     def install(self, from_workspace, to_workspace, chart_name,
                 project, app_name, values, version='latest',

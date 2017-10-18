@@ -19,7 +19,7 @@ class DealerLister(lister.Lister):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_resources(self, parsed_args):
+    def _get_resources(self, args):
         """Gets a list of API resources (e.g. using client)."""
         raise NotImplementedError
 
@@ -27,12 +27,12 @@ class DealerLister(lister.Lister):
         # No-op by default.
         pass
 
-    def take_action(self, parsed_args):
-        self._validate_parsed_args(parsed_args)
+    def take_action(self, args):
+        self._validate_parsed_args(args)
 
         f = self._get_format_function()
 
-        ret = self._get_resources(parsed_args)
+        ret = self._get_resources(args)
         if not isinstance(ret, list):
             ret = [ret]
 

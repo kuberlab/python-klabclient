@@ -294,6 +294,8 @@ class DealerShell(app.App):
 
             'app-list': apps.List,
             'app-get': apps.Get,
+            'app-destination-list': apps.ListDestinations,
+            'app-destination-get': apps.GetDestination,
             'app-get-config': apps.GetConfig,
             'app-install': apps.Install,
             'app-delete': apps.Delete,

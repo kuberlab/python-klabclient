@@ -1,3 +1,4 @@
+import json
 import yaml
 
 from cliff import command
@@ -5,6 +6,7 @@ from cliff import show
 
 from dealerclient.commands import base
 from dealerclient.commands import charts
+from dealerclient import exceptions
 from dealerclient import utils
 
 
@@ -82,6 +84,23 @@ def format(mlapp=None, lister=False):
     return columns, data
 
 
+def format_dest_list(dest=None):
+    return format_destination(dest, lister=True)
+
+
+def format_destination(dest=None, lister=False):
+    columns = ('Type', 'Name', 'ID',)
+    data = (dest.Type, dest.Name, dest.ID,)
+
+    if not lister:
+        columns += ('Meta',)
+        data += (
+            json.dumps(getattr(dest, 'Meta', {}), indent=4),
+        )
+
+    return columns, data
+
+
 class List(base.DealerLister):
     """List all apps in the workspace."""
 
@@ -117,6 +136,64 @@ class Get(show.ShowOne):
         mlapp = dealer_client.apps.get(args.workspace, args.name)
 
         return format(mlapp)
+
+
+class ListDestinations(base.DealerLister):
+    """List app destinations (project and clusters)."""
+
+    def _get_format_function(self):
+        return format_dest_list
+
+    def get_parser(self, prog_name):
+        parser = super(ListDestinations, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        dest = dealer_client.apps.get_destinations(args.workspace)
+
+        return dest
+
+
+class GetDestination(show.ShowOne):
+    """Get specific chart by name."""
+
+    def get_parser(self, prog_name):
+        parser = super(GetDestination, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+
+        parser.add_argument(
+            '--type',
+            required=True,
+            help='Destination type.'
+        )
+        parser.add_argument(
+            '--id',
+            required=True,
+            help='Destination id.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        dests = dealer_client.apps.get_destinations(args.workspace)
+
+        found = None
+        for dest in dests:
+            if dest.Type == args.type and dest.ID == args.id:
+                found = dest
+
+        if not found:
+            raise exceptions.DealerClientException(
+                'App destination [Type=%s, ID=%s] not found.'
+                % (args.type, args.id)
+            )
+        return format_destination(found)
 
 
 class GetConfig(command.Command):
