@@ -7,7 +7,7 @@ from oslotest import base
 
 from dealerclient.api import client
 
-DEALER_HTTP_URL = 'https://dev.kuberlab.io/api/v0.2'
+DEALER_HTTP_URL = 'https://go.kuberlab.io/api/v0.2'
 DEALER_HTTPS_URL = DEALER_HTTP_URL.replace('http', 'https')
 
 

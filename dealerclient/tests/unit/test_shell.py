@@ -15,7 +15,7 @@ class TestShell(base.BaseShellTests):
         self.assertTrue(client_mock.called)
         params = client_mock.call_args
         self.assertEqual(
-            'https://dev.kuberlab.io/api/v0.2',
+            'https://go.kuberlab.io/api/v0.2',
             params[1]['dealer_url']
         )
 
