@@ -10,11 +10,11 @@ from dealerclient import exceptions
 from dealerclient import utils
 
 
-def format_list(mlapp=None):
-    return format(mlapp, lister=True)
+def format_list(app=None):
+    return format(app, lister=True)
 
 
-def format(mlapp=None, lister=False):
+def format(app=None, lister=False):
     # "ClusterName": "string",
     # "Description": "string",
     # "DisableReason": "string",
@@ -46,14 +46,14 @@ def format(mlapp=None, lister=False):
         'Project',
     )
 
-    if mlapp:
+    if app:
         data = (
-            mlapp.Name,
-            mlapp.DisplayName,
-            mlapp.Enabled,
-            mlapp.ClusterName,
-            mlapp.WorkspaceName,
-            mlapp.ProjectName,
+            app.Name,
+            app.DisplayName,
+            app.Enabled,
+            app.ClusterName,
+            app.WorkspaceName,
+            app.ProjectName,
         )
         if not lister:
             columns += (
@@ -68,15 +68,15 @@ def format(mlapp=None, lister=False):
                 'Shared Cluster Name',
             )
             data = data + (
-                mlapp.Description,
-                mlapp.Environment,
-                getattr(mlapp, 'DisableReason', '<none>'),
-                getattr(mlapp, 'GlobalClusterID', '<none>'),
-                getattr(mlapp, 'GlobalClusterName', '<none>'),
-                mlapp.ProjectDisplayName,
-                mlapp.WorkspaceDisplayName,
-                getattr(mlapp, 'SharedClusterID', '<none>'),
-                getattr(mlapp, 'SharedClusterName', '<none>'),
+                app.Description,
+                app.Environment,
+                getattr(app, 'DisableReason', '<none>'),
+                getattr(app, 'GlobalClusterID', '<none>'),
+                getattr(app, 'GlobalClusterName', '<none>'),
+                app.ProjectDisplayName,
+                app.WorkspaceDisplayName,
+                getattr(app, 'SharedClusterID', '<none>'),
+                getattr(app, 'SharedClusterName', '<none>'),
             )
     else:
         data = (tuple('<none>' for _ in range(len(columns))),)
@@ -97,6 +97,41 @@ def format_destination(dest=None, lister=False):
         data += (
             json.dumps(getattr(dest, 'Meta', {}), indent=4),
         )
+
+    return columns, data
+
+
+def format_source_list(source=None):
+    return format_source(source, lister=True)
+
+
+def format_source(source=None, lister=False):
+    columns = ('Name', 'Mount path', 'SubPath', 'Lib', 'Train',)
+    data = (
+        source.name,
+        source.mountPath,
+        source.subPath,
+        source.isLibDir,
+        source.isTrainLogDir,
+    )
+
+    if not lister:
+        # All below needed for dynamic column rendering.
+        # Sources may have any new attributes in the future so
+        # we can't refer to static field list.
+        attrs = utils.get_public_attr(
+            source,
+            except_of=[
+                'resource_name', 'defaults', 'manager', 'name', 'mountPath',
+                'subPath', 'isLibDir', 'isTrainLogDir'
+            ]
+        )
+        for k, v in attrs.items():
+            columns += (k,)
+            if isinstance(v, (list, dict)):
+                v = json.dumps(v, indent=4)
+
+            data += (v,)
 
     return columns, data
 
@@ -133,9 +168,61 @@ class Get(show.ShowOne):
     @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
-        mlapp = dealer_client.apps.get(args.workspace, args.name)
+        app = dealer_client.apps.get(args.workspace, args.name)
 
-        return format(mlapp)
+        return format(app)
+
+
+class ListSources(base.DealerLister):
+    """List all app sources."""
+
+    def _get_format_function(self):
+        return format_source_list
+
+    def get_parser(self, prog_name):
+        parser = super(ListSources, self).get_parser(prog_name)
+
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+
+        app = dealer_client.apps.get(args.workspace, args.name)
+
+        return app.get_sources()
+
+
+class GetSource(show.ShowOne):
+    """Show specific app source."""
+
+    def get_parser(self, prog_name):
+        parser = super(GetSource, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+        parser.add_argument('source', help='Source name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.get(args.workspace, args.name)
+
+        sources = app.get_sources()
+        found = None
+        for source in sources:
+            if source.name == args.source:
+                found = source
+
+        if not found:
+            raise exceptions.DealerClientException(
+                'App source [name=%s] not found.' % args.source
+            )
+
+        return format_source(found)
 
 
 class ListDestinations(base.DealerLister):
@@ -209,9 +296,9 @@ class GetConfig(command.Command):
     @base.workspace_aware
     def take_action(self, args):
         dealer_client = self.app.client
-        mlapp = dealer_client.apps.get(args.workspace, args.name)
+        app = dealer_client.apps.get(args.workspace, args.name)
 
-        self.app.stdout.write(yaml.safe_dump(mlapp.Configuration))
+        self.app.stdout.write(yaml.safe_dump(app.Configuration))
 
 
 class Install(charts.Install):
@@ -249,6 +336,6 @@ class Delete(command.Command):
                 args.workspace, s, args.force
             ),
             args.name,
-            "Request to delete mlapp %s has been accepted.",
-            "Unable to delete the specified mlapp(s)."
+            "Request to delete app %s has been accepted.",
+            "Unable to delete the specified app(s)."
         )

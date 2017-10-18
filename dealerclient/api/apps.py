@@ -16,6 +16,26 @@ class App(base.Resource):
     # "ProjectName": "demotest",
     # "ProjectDisplayName": "demotest"
 
+    def get_sources(self):
+        if not hasattr(self, 'Configuration'):
+            return []
+
+        sources = []
+        for source_raw in self.Configuration.get('spec', {}).get('volumes'):
+            sources += [AppSource(self, source_raw)]
+
+        return sources
+
+    def upload_data(self, source_name, data, path):
+        pass
+
+    def upload_file(self, source_name, filepath):
+        pass
+
+
+class AppSource(base.Resource):
+    resource_name = 'AppSource'
+
 
 class AppDestination(base.Resource):
     resource_name = 'AppDestination'

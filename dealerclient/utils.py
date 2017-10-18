@@ -1,4 +1,5 @@
 
+import inspect
 import json
 import os
 import yaml
@@ -73,3 +74,22 @@ def load_json(input_string):
             return json.load(fh)
     except IOError:
         return json.loads(input_string)
+
+
+def get_public_attr(obj, except_of=None):
+    public_attrs = [a for a in dir(obj) if not a.startswith('_')]
+
+    result = {}
+    for attr in public_attrs:
+        if except_of and attr in except_of:
+            continue
+
+        attr_value = getattr(obj, attr)
+        not_func = not inspect.isfunction(attr_value)
+        not_method = not inspect.ismethod(attr_value)
+        not_generator = not inspect.isgenerator(attr_value)
+
+        if not_func and not_method and not_generator:
+            result[attr] = attr_value
+
+    return result
