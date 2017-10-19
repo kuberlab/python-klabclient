@@ -173,6 +173,28 @@ class Get(show.ShowOne):
         return format(app)
 
 
+class Upload(command.Command):
+    """Upload a file to specific source of the app."""
+
+    def get_parser(self, prog_name):
+        parser = super(Upload, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+        parser.add_argument('--source', required=True, help='Source name.')
+        parser.add_argument('--file', help='File path.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.get(args.workspace, args.name)
+
+        resp = app.upload_file(args.source, args.file)
+        self.app.stdout.write(resp)
+        self.app.stdout.write('\n')
+
+
 class ListSources(base.DealerLister):
     """List all app sources."""
 

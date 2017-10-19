@@ -27,10 +27,38 @@ class App(base.Resource):
         return sources
 
     def upload_data(self, source_name, data, target_path):
-        pass
+        url = (
+            '/workspace/%s/application/%s/upload'
+            % (self.WorkspaceName, self.Name)
+        )
+        resp = self.manager.http_client.post_file(
+            url,
+            {'source': source_name},
+            target_path,
+            data
+        )
+        if resp.status_code >= 400:
+            self.manager._raise_api_exception(resp)
+
+        return resp.text
 
     def upload_file(self, source_name, filepath):
-        pass
+        url = (
+            '/workspace/%s/application/%s/upload'
+            % (self.WorkspaceName, self.Name)
+        )
+        base_path = filepath.split('/')[-1]
+        with open(filepath, 'rb') as f:
+            resp = self.manager.http_client.post_file(
+                url,
+                {'source': source_name},
+                base_path,
+                f
+            )
+        if resp.status_code >= 400:
+            self.manager._raise_api_exception(resp)
+
+        return resp.text
 
 
 class AppSource(base.Resource):

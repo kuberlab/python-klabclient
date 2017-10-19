@@ -294,6 +294,7 @@ class DealerShell(app.App):
 
             'app-list': apps.List,
             'app-get': apps.Get,
+            'app-file-upload': apps.Upload,
             'app-destination-list': apps.ListDestinations,
             'app-destination-get': apps.GetDestination,
             'app-source-list': apps.ListSources,
