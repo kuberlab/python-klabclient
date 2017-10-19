@@ -150,7 +150,7 @@ class Delete(command.Command):
 
 
 class Run(show.ShowOne):
-    """Update app_task."""
+    """Run app task."""
 
     def get_parser(self, prog_name):
         parser = super(Run, self).get_parser(prog_name)

@@ -181,7 +181,7 @@ class Get(show.ShowOne):
 
 
 class ConfigTasks(base.DealerLister):
-    """Show app config."""
+    """List tasks defined in app config."""
 
     def _get_format_function(self):
         return format_config_task
@@ -318,7 +318,7 @@ class ListDestinations(base.DealerLister):
 
 
 class GetDestination(show.ShowOne):
-    """Get specific chart by name."""
+    """Get specific app destination by name."""
 
     def get_parser(self, prog_name):
         parser = super(GetDestination, self).get_parser(prog_name)
