@@ -101,6 +101,13 @@ def format_destination(dest=None, lister=False):
     return columns, data
 
 
+def format_config_task(app_task=None):
+    columns = ('Name',)
+    data = (app_task.name,)
+
+    return columns, data
+
+
 def format_source_list(source=None):
     return format_source(source, lister=True)
 
@@ -171,6 +178,49 @@ class Get(show.ShowOne):
         app = dealer_client.apps.get(args.workspace, args.name)
 
         return format(app)
+
+
+class ConfigTasks(base.DealerLister):
+    """Show app config."""
+
+    def _get_format_function(self):
+        return format_config_task
+
+    def get_parser(self, prog_name):
+        parser = super(ConfigTasks, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.get(args.workspace, args.name)
+        tasks = app.get_config_tasks()
+
+        return tasks
+
+
+class ConfigTask(show.ShowOne):
+    """Show specific task from app config."""
+
+    def get_parser(self, prog_name):
+        parser = super(ConfigTask, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument('name', help='Task name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.get(args.workspace, args.app)
+
+        t = app.get_config_task(args.name)
+        self.app.stdout.write(yaml.safe_dump(t.to_dict()))
+        self.app.stdout.write('\n')
 
 
 class Upload(command.Command):

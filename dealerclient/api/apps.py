@@ -1,5 +1,9 @@
+import yaml
+
+from dealerclient.api import app_tasks
 from dealerclient.api import base
 from dealerclient.api import charts
+from dealerclient import exceptions
 
 
 class App(base.Resource):
@@ -15,16 +19,48 @@ class App(base.Resource):
     # "WorkspaceDisplayName": "KuberLab Demo",
     # "ProjectName": "demotest",
     # "ProjectDisplayName": "demotest"
+    # "Configuration": {"spec": {...}}
+    def __init__(self, manager, data):
+        super(App, self).__init__(manager, data)
+        self.config = None
+
+        if hasattr(self, 'Configuration'):
+            self.config = self.Configuration
 
     def get_sources(self):
-        if not hasattr(self, 'Configuration'):
+        if not self.config:
             return []
 
         sources = []
-        for source_raw in self.Configuration.get('spec', {}).get('volumes'):
+        for source_raw in self.config.get('spec', {}).get('volumes'):
             sources += [AppSource(self, source_raw)]
 
         return sources
+
+    def get_config_tasks(self):
+        m = app_tasks.AppTaskManager(self.manager.http_client)
+        tasks = []
+        for t in self.config['spec']['tasks']:
+            task_dict = {
+                'app': self.Name,
+                'config': yaml.safe_dump(t),
+                'name': t.get('name'),
+                'workspace': self.WorkspaceName
+            }
+            task = app_tasks.AppTask(m, task_dict)
+            tasks.append(task)
+
+        return tasks
+
+    def get_config_task(self, name):
+        tasks = self.get_config_tasks()
+        for t in tasks:
+            if t.name == name:
+                return t
+
+        raise exceptions.DealerClientException(
+            'App task [name=%s] not found.' % name
+        )
 
     def upload_data(self, source_name, data, target_path):
         url = (

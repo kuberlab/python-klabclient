@@ -14,6 +14,7 @@ from cliff import commandmanager
 
 import dealerclient
 from dealerclient.api import client
+from dealerclient.commands import app_tasks
 from dealerclient.commands import apps
 from dealerclient.commands import charts
 from dealerclient.commands import organizations
@@ -299,9 +300,17 @@ class DealerShell(app.App):
             'app-destination-get': apps.GetDestination,
             'app-source-list': apps.ListSources,
             'app-source-get': apps.GetSource,
-            'app-get-config': apps.GetConfig,
+            'app-config': apps.GetConfig,
+            'app-config-task-list': apps.ConfigTasks,
+            'app-config-task-get': apps.ConfigTask,
             'app-install': apps.Install,
             'app-delete': apps.Delete,
+
+            'app-task-list': app_tasks.List,
+            'app-task-get': app_tasks.Get,
+            'app-task-run': app_tasks.Run,
+            'app-task-create': app_tasks.Create,
+            'app-task-delete': app_tasks.Delete,
 
             'shared-cluster-available-list': sharedclusters.ListAvailable,
             'shared-cluster-own-list': sharedclusters.ListOwn,

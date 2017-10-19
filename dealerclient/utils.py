@@ -1,7 +1,10 @@
 
+import errno
+import functools
 import inspect
 import json
 import os
+import signal
 import yaml
 
 from six.moves.urllib import parse
@@ -93,3 +96,22 @@ def get_public_attr(obj, except_of=None):
             result[attr] = attr_value
 
     return result
+
+
+def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            raise exceptions.TimeoutError(error_message)
+
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return functools.wraps(func)(wrapper)
+
+    return decorator

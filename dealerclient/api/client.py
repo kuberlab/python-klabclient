@@ -2,6 +2,7 @@ import copy
 import requests
 import six
 
+from dealerclient.api import app_tasks
 from dealerclient.api import apps
 from dealerclient.api import charts
 from dealerclient.api import httpclient
@@ -40,6 +41,7 @@ class Client(object):
         self.organizations = organizations.OrganizationManager(http_client)
         self.projects = projects.ProjectManager(http_client)
         self.apps = apps.AppManager(http_client)
+        self.app_tasks = app_tasks.AppTaskManager(http_client)
         self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
         self.charts = charts.ChartManager(http_client)
 
