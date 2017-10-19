@@ -26,7 +26,7 @@ class App(base.Resource):
 
         return sources
 
-    def upload_data(self, source_name, data, path):
+    def upload_data(self, source_name, data, target_path):
         pass
 
     def upload_file(self, source_name, filepath):

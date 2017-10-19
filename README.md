@@ -19,7 +19,9 @@ pip install git+https://github.com/kuberlab/python-dealerclient.git
 ### Usage
 
 ```bash
-# Set your login/password
+# Set token
+export DEALER_TOKEN=token
+# Or, use your login/password
 export DEALER_USERNAME=my@example.com
 export DEALER_PASSWORD=mypassword
 
@@ -35,7 +37,10 @@ dealer --help
 from dealerclient.api import client
 
 # Init session
-ses = client.create_session(username='username', password='password') # Pick up default base_url
+ses = client.create_session(token='token') # Pick up default base_url
+# Or, use username and password
+# ses = client.create_session(username='username', password='password') # Pick up default base_url
+
 dealer = client.Client(session=ses) # Pick up default dealer_url
 
 workspaces = dealer.workspaces.list()
