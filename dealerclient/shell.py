@@ -305,9 +305,13 @@ class DealerShell(app.App):
             'app-config-task-get': apps.ConfigTask,
             'app-install': apps.Install,
             'app-delete': apps.Delete,
+            'app-enable': apps.Enable,
+            'app-disable': apps.Disable,
 
             'app-task-list': app_tasks.List,
             'app-task-get': app_tasks.Get,
+            'app-task-pods': app_tasks.GetPods,
+            'app-task-logs': app_tasks.GetLogs,
             'app-task-run': app_tasks.Run,
             'app-task-create': app_tasks.Create,
             'app-task-delete': app_tasks.Delete,

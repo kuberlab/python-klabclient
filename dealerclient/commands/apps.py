@@ -180,6 +180,42 @@ class Get(show.ShowOne):
         return format(app)
 
 
+class Disable(show.ShowOne):
+    """Show specific app."""
+
+    def get_parser(self, prog_name):
+        parser = super(Disable, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.disable(args.workspace, args.name)
+
+        return format(app)
+
+
+class Enable(show.ShowOne):
+    """Show specific app."""
+
+    def get_parser(self, prog_name):
+        parser = super(Enable, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.enable(args.workspace, args.name)
+
+        return format(app)
+
+
 class ConfigTasks(base.DealerLister):
     """List tasks defined in app config."""
 

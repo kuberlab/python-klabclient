@@ -124,6 +124,19 @@ class AppManager(base.ResourceManager):
             '/workspace/%s/application/%s?%s' % (workspace, name, force)
         )
 
+    def disable(self, workspace, name, force=False):
+        self._ensure_not_empty(workspace=workspace, name=name)
+        url = (
+            '/workspace/%s/application/%s/disable?force=%s'
+            % (workspace, name, force)
+        )
+        return self._create(url, {})
+
+    def enable(self, workspace, name):
+        self._ensure_not_empty(workspace=workspace, name=name)
+        url = '/workspace/%s/application/%s/enable' % (workspace, name)
+        return self._create(url, {})
+
     def get_destinations(self, workspace):
         self._ensure_not_empty(workspace=workspace)
 

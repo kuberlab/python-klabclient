@@ -50,6 +50,13 @@ def format(app_task=None, lister=False):
     return columns, data
 
 
+def format_pod(pod=None):
+    columns = ('Name', 'Status')
+    data = (pod.Name, pod.Status,)
+
+    return columns, data
+
+
 class List(base.DealerLister):
     """List all app_tasks in the workspace."""
 
@@ -90,6 +97,55 @@ class Get(show.ShowOne):
         )
 
         return format(app_task)
+
+
+class GetPods(base.DealerLister):
+    """Show specific app_task."""
+
+    def _get_format_function(self):
+        return format_pod
+
+    def get_parser(self, prog_name):
+        parser = super(GetPods, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument('name', help='Task name.')
+        parser.add_argument('build', help='Build name.')
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        pods = dealer_client.app_tasks.get_pods(
+            args.workspace, args.app, args.name, args.build
+        )
+
+        return pods
+
+
+class GetLogs(command.Command):
+    """Show specific app_task."""
+
+    def get_parser(self, prog_name):
+        parser = super(GetLogs, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument('name', help='Task name.')
+        parser.add_argument('build', help='Build name.')
+        parser.add_argument('pod', help='Pod name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        logs = dealer_client.app_tasks.get_pod_logs(
+            args.workspace, args.app, args.name, args.build, args.pod
+        )
+
+        self.app.stdout.write(logs)
+        self.app.stdout.write('\n')
 
 
 class Create(show.ShowOne):
