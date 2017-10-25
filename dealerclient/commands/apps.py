@@ -143,6 +143,41 @@ def format_source(source=None, lister=False):
     return columns, data
 
 
+def format_status_list(status=None):
+    return format_status(status, lister=True)
+
+
+def format_status(status=None, lister=False):
+    # {
+    #     "name": "styles-set-jupyter",
+    #     "reason": "",
+    #     "resource_states": [
+    #         {
+    #             "events": [],
+    #             "name": "styles-set-jupyter-3007719094-4m232",
+    #             "status": "Running"
+    #         }
+    #     ],
+    #     "status": "Running",
+    #     "type": "UIX"
+    # },
+    columns = ('Name', 'Status', 'Type',)
+    data = (
+        status.name,
+        status.status,
+        status.type,
+    )
+
+    if not lister:
+        columns += ('Reason', 'Resources',)
+        data += (
+            status.reason,
+            json.dumps(status.resource_states, indent=4),
+        )
+
+    return columns, data
+
+
 class List(base.DealerLister):
     """List all apps in the workspace."""
 
@@ -178,6 +213,52 @@ class Get(show.ShowOne):
         app = dealer_client.apps.get(args.workspace, args.name)
 
         return format(app)
+
+
+class StatusList(base.DealerLister):
+    """Show app status component list."""
+
+    def _get_format_function(self):
+        return format_status_list
+
+    def get_parser(self, prog_name):
+        parser = super(StatusList, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        status = dealer_client.apps.status(args.workspace, args.name)
+
+        return status
+
+
+class StatusGet(show.ShowOne):
+    """Show app status component list."""
+
+    def get_parser(self, prog_name):
+        parser = super(StatusGet, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument('name', help='Component name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        statuses = dealer_client.apps.status(args.workspace, args.app)
+
+        for status in statuses:
+            if status.name == args.name:
+                return format_status(status, lister=False)
+
+        raise exceptions.DealerClientException(
+            'Component "%s" not found in status list.' % args.name
+        )
 
 
 class Disable(show.ShowOne):

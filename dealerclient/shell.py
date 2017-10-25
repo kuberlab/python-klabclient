@@ -300,6 +300,8 @@ class DealerShell(app.App):
             'app-destination-get': apps.GetDestination,
             'app-source-list': apps.ListSources,
             'app-source-get': apps.GetSource,
+            'app-status-list': apps.StatusList,
+            'app-status-get': apps.StatusGet,
             'app-config': apps.GetConfig,
             'app-config-task-list': apps.ConfigTasks,
             'app-config-task-get': apps.ConfigTask,

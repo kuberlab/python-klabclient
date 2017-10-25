@@ -105,6 +105,10 @@ class AppDestination(base.Resource):
     resource_name = 'AppDestination'
 
 
+class AppStatus(base.Resource):
+    resource_name = 'AppStatus'
+
+
 class AppManager(base.ResourceManager):
     resource_class = App
 
@@ -116,6 +120,18 @@ class AppManager(base.ResourceManager):
         self._ensure_not_empty(workspace=workspace, name=name)
 
         return self._get('/workspace/%s/application/%s' % (workspace, name))
+
+    def status(self, workspace, name):
+        self._ensure_not_empty(workspace=workspace, name=name)
+
+        url = '/workspace/%s/application/%s/status' % (workspace, name)
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return [
+            AppStatus(self, d) for d in base.extract_json(resp, None)
+        ]
 
     def delete(self, workspace, name, force=False):
         self._ensure_not_empty(workspace=workspace, name=name)
