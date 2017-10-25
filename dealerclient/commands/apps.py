@@ -178,6 +178,38 @@ def format_status(status=None, lister=False):
     return columns, data
 
 
+def format_packages_list(package=None):
+    return format_package(package, lister=True)
+
+
+def format_package(package=None, lister=False):
+    # {
+    #     "name": "styles-set-jupyter",
+    #     "reason": "",
+    #     "resource_states": [
+    #         {
+    #             "events": [],
+    #             "name": "styles-set-jupyter-3007719094-4m232",
+    #             "status": "Running"
+    #         }
+    #     ],
+    #     "status": "Running",
+    #     "type": "UIX"
+    # },
+    columns = ('Manager',)
+    data = (
+        package.manager,
+    )
+
+    if not lister:
+        columns += ('Packages',)
+        data += (
+            '\n'.join(package.packages),
+        )
+
+    return columns, data
+
+
 class List(base.DealerLister):
     """List all apps in the workspace."""
 
@@ -213,6 +245,98 @@ class Get(show.ShowOne):
         app = dealer_client.apps.get(args.workspace, args.name)
 
         return format(app)
+
+
+class PackageInstall(command.Command):
+    """Show specific app."""
+
+    def get_parser(self, prog_name):
+        parser = super(PackageInstall, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+        parser.add_argument(
+            '--manager',
+            help='Package manager name.',
+            default='pip2'
+        )
+        parser.add_argument(
+            '--packages',
+            help='Comma-separated list of packages.'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        iterator = dealer_client.apps.packages_install(
+            args.workspace,
+            args.name,
+            args.manager,
+            args.packages.split(',')
+        )
+
+        first = next(iterator)
+        self.app.stdout.write(first + '\n')
+
+        for line in iterator:
+            self.app.stdout.write(line + '\n')
+
+
+class PackageList(base.DealerLister):
+    """Show app status component list."""
+
+    def _get_format_function(self):
+        return format_packages_list
+
+    def get_parser(self, prog_name):
+        parser = super(PackageList, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        packages = dealer_client.apps.packages_list(args.workspace, args.name)
+
+        return packages
+
+
+class PackageGet(show.ShowOne):
+    """Show app status component list."""
+
+    def get_parser(self, prog_name):
+        parser = super(PackageGet, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument('--manager', help='Manager name.', default='pip2')
+        parser.add_argument(
+            '--all',
+            help=(
+                'Show all packages (if not, '
+                'show only installed by the user).'
+            ),
+            action='store_true'
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        packages = dealer_client.apps.packages_list(
+            args.workspace, args.app, args.all
+        )
+
+        for package in packages:
+            if package.manager == args.manager:
+                return format_package(package, lister=False)
+
+        raise exceptions.DealerClientException(
+            'Manager "%s" not found in package manager list.' % args.manager
+        )
 
 
 class StatusList(base.DealerLister):

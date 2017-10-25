@@ -309,6 +309,9 @@ class DealerShell(app.App):
             'app-delete': apps.Delete,
             'app-enable': apps.Enable,
             'app-disable': apps.Disable,
+            'app-package-install': apps.PackageInstall,
+            'app-package-manager-list': apps.PackageList,
+            'app-package-manager-get': apps.PackageGet,
 
             'app-task-list': app_tasks.List,
             'app-task-get': app_tasks.Get,

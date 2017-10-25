@@ -1,3 +1,4 @@
+import json
 import yaml
 
 from dealerclient.api import app_tasks
@@ -109,6 +110,10 @@ class AppStatus(base.Resource):
     resource_name = 'AppStatus'
 
 
+class AppPackage(base.Resource):
+    resource_name = 'AppPackage'
+
+
 class AppManager(base.ResourceManager):
     resource_class = App
 
@@ -132,6 +137,43 @@ class AppManager(base.ResourceManager):
         return [
             AppStatus(self, d) for d in base.extract_json(resp, None)
         ]
+
+    def packages_list(self, workspace, name, all=False):
+        self._ensure_not_empty(workspace=workspace, name=name)
+
+        url = (
+            '/workspace/%s/application/%s/packages?all=%s'
+            % (workspace, name, all)
+        )
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return [
+            AppPackage(self, d) for d in base.extract_json(resp, None)
+        ]
+
+    def packages_install(self, workspace, name, manager, packages):
+        self._ensure_not_empty(workspace=workspace, name=name)
+
+        url = '/workspace/%s/application/%s/packages' % (workspace, name)
+
+        body = {
+            'manager': manager,
+            'packages': packages
+        }
+
+        resp = self.http_client.crud_provider.post(
+            self.http_client.base_url + url,
+            data=json.dumps(body),
+            headers={'Content-Type': 'application/json'},
+            stream=True,
+        )
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        # Return iterator
+        return resp.iter_lines()
 
     def delete(self, workspace, name, force=False):
         self._ensure_not_empty(workspace=workspace, name=name)
