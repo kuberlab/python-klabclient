@@ -6,11 +6,13 @@ Command-line interface to the Dealer APIs
 import argparse
 import logging
 import os
+from os import path
 import sys
 
 from cliff import app
 from cliff import command
 from cliff import commandmanager
+import yaml
 
 import dealerclient
 from dealerclient.api import client
@@ -21,6 +23,9 @@ from dealerclient.commands import organizations
 from dealerclient.commands import projects
 from dealerclient.commands import sharedclusters
 from dealerclient.commands import workspaces
+
+
+LOG = None
 
 
 def env(*args, **kwargs):
@@ -121,6 +126,8 @@ class DealerShell(app.App):
 
         if self.options.verbose_level <= 1:
             logging.getLogger('requests').setLevel(logging.WARNING)
+        global LOG
+        LOG = logging.getLogger(__name__)
 
     def build_option_parser(self, description, version,
                             argparse_kwargs=None):
@@ -184,6 +191,13 @@ class DealerShell(app.App):
             help='Show tracebacks on errors.',
         )
 
+        home = path.expanduser('~')
+        parser.add_argument(
+            '--config',
+            default=env('DEALER_CONFIG') or '%s/.kuberlab/config' % home,
+            help='Config containing url, user/pass/token parameters.',
+        )
+
         parser.add_argument(
             '--dealer-url',
             action='store',
@@ -236,31 +250,29 @@ class DealerShell(app.App):
         if completion:
             return
 
-        # if not (self.options.client_id or self.options.client_secret):
-        #     if not self.options.username:
-        #         raise exe.IllegalArgumentException(
-        #             ("You must provide a username "
-        #              "via --username env[DEALER_USERNAME]")
-        #         )
-        #
-        #     if not self.options.password:
-        #         raise exe.IllegalArgumentException(
-        #             ("You must provide a password "
-        #              "via --password env[DEALER_PASSWORD]")
-        #         )
+        params = self._try_parse_config(self.options.config)
 
         session = client.create_session(
-            self.options.dealer_url,
-            username=self.options.username,
-            password=self.options.password,
+            params.get('base_url') or self.options.dealer_url,
+            username=params.get('username') or self.options.username,
+            password=params.get('password') or self.options.password,
             insecure=self.options.insecure,
-            token=self.options.token,
+            token=params.get('token') or self.options.token,
         )
         self.client = client.Client(
             session,
-            dealer_url=self.options.dealer_url,
+            dealer_url=params.get('base_url') or self.options.dealer_url,
             insecure=self.options.insecure,
         )
+
+    def _try_parse_config(self, path):
+        try:
+            with open(path, 'r') as f:
+                cfg = yaml.safe_load(f)
+                return cfg
+        except Exception as e:
+            LOG.warn("Can't parse config: %s", str(e))
+            return {}
 
     def _set_shell_commands(self, cmds_dict):
         for k, v in cmds_dict.items():
