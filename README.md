@@ -1,6 +1,6 @@
 # python-dealerclient
 
-### Installation
+## Installation
 
 Developer installation:
 
@@ -16,9 +16,9 @@ User installation:
 pip install git+https://github.com/kuberlab/python-dealerclient.git
 ```
 
-### Usage
+## Usage
 
-## Use config for auth (default location is *~/.kuberlab/config*)
+#### Use config for auth (default location is *~/.kuberlab/config*)
 
 ```bash
 touch ~/.kuberlab/config
@@ -30,7 +30,7 @@ EOF
 
 **Note**: Refer to [Config example](config.yaml.example) to see all possible values.
 
-# Use environment variables
+#### Use environment variables
 
 ```bash
 # Set token
@@ -40,7 +40,7 @@ export DEALER_USERNAME=my@example.com
 export DEALER_PASSWORD=mypassword
 ```
 
-## Call CLI or see help to take a look on a command list:
+#### Call CLI or see help to take a look on a command list:
 
 ```bash
 dealer workspace-list
@@ -51,7 +51,7 @@ dealer --help
 
 **Note**: Priority for auth parameters: CLI parameters, Env variables, config values.
 
-### Usage as a python library
+## Usage as a python library
 
 ```python
 from dealerclient.api import client
