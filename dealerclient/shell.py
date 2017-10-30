@@ -195,14 +195,17 @@ class DealerShell(app.App):
         parser.add_argument(
             '--config',
             default=env('DEALER_CONFIG') or '%s/.kuberlab/config' % home,
-            help='Config containing url, user/pass/token parameters.',
+            help=(
+                'Config containing url, user/pass/token parameters.'
+                ' Default "~/.kuberlab/config", (Env: DEALER_CONFIG)'
+            )
         )
 
         parser.add_argument(
             '--dealer-url',
             action='store',
             dest='dealer_url',
-            default=env('DEALER_URL') or 'https://go.kuberlab.io/api/v0.2',
+            default=env('DEALER_URL'),
             help='Dealer API base url (Env: DEALER_URL)'
         )
 
@@ -252,16 +255,17 @@ class DealerShell(app.App):
 
         params = self._try_parse_config(self.options.config)
 
+        # CLI parameters and ENV vars take precedence.
         session = client.create_session(
-            params.get('base_url') or self.options.dealer_url,
-            username=params.get('username') or self.options.username,
-            password=params.get('password') or self.options.password,
+            self.options.dealer_url or params.get('base_url'),
+            username=self.options.username or params.get('username'),
+            password=self.options.password or params.get('password'),
             insecure=self.options.insecure,
-            token=params.get('token') or self.options.token,
+            token=self.options.token or params.get('token'),
         )
         self.client = client.Client(
             session,
-            dealer_url=params.get('base_url') or self.options.dealer_url,
+            dealer_url=self.options.dealer_url or params.get('base_url'),
             insecure=self.options.insecure,
         )
 

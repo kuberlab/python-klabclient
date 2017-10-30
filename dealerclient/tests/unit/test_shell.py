@@ -10,14 +10,11 @@ class TestShell(base.BaseShellTests):
     @mock.patch('dealerclient.api.client.create_session')
     def test_command_no_dealer_url(self, session_mock, client_mock):
         self.shell(
-            'workspace-list'
+            'workspace-list --config wrong'
         )
         self.assertTrue(client_mock.called)
         params = client_mock.call_args
-        self.assertEqual(
-            'https://go.kuberlab.io/api/v0.2',
-            params[1]['dealer_url']
-        )
+        self.assertIsNone(params[1]['dealer_url'])
 
     @mock.patch('dealerclient.api.client.Client')
     @mock.patch('dealerclient.api.client.create_session')
