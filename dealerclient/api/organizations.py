@@ -60,7 +60,11 @@ class OrganizationManager(base.ResourceManager):
 
         return self._get('/org/%s' % identifier)
 
-    def delete(self, identifier):
+    def delete(self, identifier, confirm=None):
         self._ensure_not_empty(identifier=identifier)
 
-        self._delete('/org/%s?force=true' % identifier)
+        url = '/org/%s' % identifier
+        if confirm:
+            url += '?confirm=%s' % confirm
+
+        self._delete(url)

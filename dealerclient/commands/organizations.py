@@ -135,14 +135,15 @@ class Delete(command.Command):
 
         parser.add_argument(
             'id',
-            nargs='+',
             help='ID of organization(s).'
         )
 
         parser.add_argument(
-            '--force',
-            action='store_true',
-            help='Force delete.'
+            '--confirm',
+            help=(
+                'Confirmation string to delete the org. '
+                '(Usually this is org\'s name)'
+            )
         )
 
         return parser
@@ -150,17 +151,8 @@ class Delete(command.Command):
     def take_action(self, args):
         dealer_client = self.app.client
 
-        if not args.force:
-            raise exceptions.IllegalArgumentException(
-                'Provide --force parameter if you sure to delete org.'
-            )
-
-        utils.do_action_on_many(
-            lambda s: dealer_client.organizations.delete(s),
-            args.id,
-            "Request to delete organization %s has been accepted.",
-            "Unable to delete the specified organization(s)."
-        )
+        dealer_client.organizations.delete(args.id, args.confirm)
+        self.app.stdout.write('Request for deletion has accepted.\n')
 
 
 class Update(show.ShowOne):
