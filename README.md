@@ -49,6 +49,10 @@ dealer workspace-list
 dealer --help
 ```
 
+## App installation example
+
+See how to install a simple app - [App installation](App_installation.md)
+
 **Note**: Priority for auth parameters: CLI parameters, Env variables, config values.
 
 ## Usage as a python library
