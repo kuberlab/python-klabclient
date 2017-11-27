@@ -19,6 +19,7 @@ from dealerclient.api import client
 from dealerclient.commands import app_tasks
 from dealerclient.commands import apps
 from dealerclient.commands import charts
+from dealerclient.commands import clusters
 from dealerclient.commands import organizations
 from dealerclient.commands import projects
 from dealerclient.commands import sharedclusters
@@ -354,6 +355,9 @@ class DealerShell(app.App):
             'chart-create': charts.Create,
             'chart-install': charts.Install,
             'chart-delete': charts.Delete,
+
+            'cluster-list': clusters.List,
+            'cluster-get': clusters.Get,
         }
 
 

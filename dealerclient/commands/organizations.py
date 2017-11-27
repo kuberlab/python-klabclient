@@ -2,8 +2,6 @@ from cliff import command
 from cliff import show
 
 from dealerclient.commands import base
-from dealerclient import exceptions
-from dealerclient import utils
 
 
 def format_list(org=None):
