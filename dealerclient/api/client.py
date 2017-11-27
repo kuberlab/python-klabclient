@@ -10,6 +10,7 @@ from dealerclient.api import httpclient
 from dealerclient.api import organizations
 from dealerclient.api import projects
 from dealerclient.api import sharedclusters
+from dealerclient.api import storage
 from dealerclient.api import workspaces
 from dealerclient import exceptions
 
@@ -46,6 +47,7 @@ class Client(object):
         self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
         self.charts = charts.ChartManager(http_client)
         self.clusters = clusters.ClusterManager(http_client)
+        self.storage = storage.StorageManager(http_client)
 
 
 def create_session(base_url=_DEFAULT_DEALER_URL, **kwargs):

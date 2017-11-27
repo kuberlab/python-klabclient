@@ -3,7 +3,7 @@ from dealerclient.api import base
 
 
 class Cluster(base.Resource):
-    resource_name = 'Workspace'
+    resource_name = 'Cluster'
 
 
 class ClusterManager(base.ResourceManager):

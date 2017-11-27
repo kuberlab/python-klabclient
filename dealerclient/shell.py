@@ -23,6 +23,7 @@ from dealerclient.commands import clusters
 from dealerclient.commands import organizations
 from dealerclient.commands import projects
 from dealerclient.commands import sharedclusters
+from dealerclient.commands import storage
 from dealerclient.commands import workspaces
 
 
@@ -358,6 +359,9 @@ class DealerShell(app.App):
 
             'cluster-list': clusters.List,
             'cluster-get': clusters.Get,
+
+            'storage-list': storage.List,
+            'storage-get': storage.Get,
         }
 
 
