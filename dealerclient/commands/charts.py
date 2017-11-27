@@ -410,6 +410,10 @@ class Install(show.ShowOne):
             help='Target shared cluster id.'
         )
         parser.add_argument(
+            '--cluster-id',
+            help='Target cluster id.'
+        )
+        parser.add_argument(
             '--env',
             default='master',
             help='Project environment (repo branch).'
@@ -443,6 +447,7 @@ class Install(show.ShowOne):
             args.chart_version,
             args.cluster_name,
             args.shared_cluster_id,
+            args.cluster_id,
             args.env,
         )
 

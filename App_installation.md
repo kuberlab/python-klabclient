@@ -32,21 +32,50 @@ cat values.yaml
 * Now, we have to adjust values.yaml to fit our requirements. First, need to choose cluster storage. See shared cluster list:
 
 ```
-$ dealer shared-cluster-available-list
-+-----+----------------+---------------+--------+
-| ID  | Display name   | WorkspaceName | Active |
-+-----+----------------+---------------+--------+
-| 221 | testshare      | kuberlab-demo | True   |
-| 381 | test-limits    | kuberlab-demo | True   |
-| 401 | no-limits      | kuberlab-demo | True   |
-+-----+----------------+---------------+--------+
+$ dealer cluster-list --workspace kuberlab-demo
+$ dealer cluster-list --workspace kuberlab-demo
++---------------------------------------------+----------------+---------------------+
+| ClusterID                                   | ClusterType    | Name                |
++---------------------------------------------+----------------+---------------------+
+| demotest/minikube                           | infrastructure | minikube            |
+| ls-demo/ls-demo                             | infrastructure | ls-demo             |
+| ls-demo/local                               | infrastructure | local               |
+| shared/221                                  | shared         | testshare           |
+| shared/381                                  | shared         | test-limits         |
+| shared/401                                  | shared         | no-limits           |
+| global/602df9e2-6e33-4e41-9b9e-21f3e1422e3d | global         | test-global-cluster |
++---------------------------------------------+----------------+---------------------+
 ```
 
-* We will pick up the shared cluster without limits with ID *401*.
+* We will pick up the shared cluster without limits with ID *shared/401*.
 
-<mark>TODO: Add storage retrieving commands from cluster</mark>
+* Choose the storage: 
 
-* Adjust values.yaml so it uses chosen storage.
+```
+$ dealer storage-list --workspace kuberlab-demo demotest/minikube
++-----------------+-----------------------------+
+| Type            | Name                        |
++-----------------+-----------------------------+
+| cluster_storage | infrastructure/default      |
+| cluster_storage | infrastructure/test         |
+| cluster_storage | infrastructure/test-storage |
++-----------------+-----------------------------+
+```
+
+* Pick up the storage with name **infrastructure/default**. Adjust **values.yaml** and paste given storage name in appropriate position:
+
+*values.yaml*
+```
+...
+storage:
+ value: infrastructure/default     # <---- here!
+ wizard:
+   name: "Storage Configuration"
+   kind: cluster_storage
+...
+
+```
+
 * See projects: 
 
 ```
@@ -63,7 +92,7 @@ $ dealer project-list --workspace kuberlab-demo
 
 ```bash
 dealer app-install --name tensorflow --chart-workspace kuberlab-demo --target-workspace kuberlab-demo \
-   -app tensorflow-for-test --shared-cluster-id 401 --project demotest --values values.yaml
+   -app tensorflow-for-test --cluster-id shared/401 --project demotest --values values.yaml
 ```
 
 * Take a look what we've got:

@@ -90,7 +90,8 @@ class ChartManager(base.ResourceManager):
 
     def install(self, from_workspace, to_workspace, chart_name,
                 project, app_name, values, version='latest',
-                cluster_name=None, shared_cluster_id=None, env="master"):
+                cluster_name=None, shared_cluster_id=None,
+                cluster_id=None, env="master"):
         install_chart_request = {
             "target_application": app_name,
             "environment": env,
@@ -103,7 +104,9 @@ class ChartManager(base.ResourceManager):
         if isinstance(values, six.string_types):
             install_chart_request['values_yaml'] = values
 
-        if cluster_name:
+        if cluster_id:
+            install_chart_request['cluster_id'] = cluster_id
+        elif cluster_name:
             install_chart_request['clusters'] = [cluster_name]
         elif shared_cluster_id:
             install_chart_request['shared_cluster_id'] = shared_cluster_id
