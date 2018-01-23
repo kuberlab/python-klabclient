@@ -510,7 +510,7 @@ class ConfigTasks(base.DealerLister):
         return tasks
 
 
-class ConfigTask(show.ShowOne):
+class ConfigTask(command.Command):
     """Show specific task from app config."""
 
     def get_parser(self, prog_name):
@@ -527,7 +527,8 @@ class ConfigTask(show.ShowOne):
         app = dealer_client.apps.get(args.workspace, args.app)
 
         t = app.get_config_task(args.name)
-        self.app.stdout.write(yaml.safe_dump(t.to_dict()))
+        t_dict = t.to_dict()
+        self.app.stdout.write(t_dict['config'])
         self.app.stdout.write('\n')
 
 

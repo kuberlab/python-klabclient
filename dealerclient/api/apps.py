@@ -45,8 +45,11 @@ class App(base.Resource):
         for t in self.config['spec']['tasks']:
             task_dict = {
                 'app': self.Name,
-                'config': yaml.safe_dump(t),
-                'app_config': yaml.safe_dump(self.full_config),
+                'config': yaml.safe_dump(t, default_flow_style=False),
+                'app_config': yaml.safe_dump(
+                    self.full_config,
+                    default_flow_style=False
+                ),
                 'name': t.get('name'),
                 'workspace': self.WorkspaceName
             }
