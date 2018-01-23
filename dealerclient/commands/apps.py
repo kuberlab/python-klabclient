@@ -679,7 +679,7 @@ class GetConfig(command.Command):
         dealer_client = self.app.client
         app = dealer_client.apps.get(args.workspace, args.name)
 
-        self.app.stdout.write(yaml.safe_dump(app.Configuration))
+        self.app.stdout.write(yaml.safe_dump(app.Configuration, default_flow_style=False))
 
 
 class Install(charts.Install):
