@@ -136,9 +136,7 @@ class AppManager(base.ResourceManager):
         if resp.status_code >= 400:
             self._raise_api_exception(resp)
 
-        return [
-            AppStatus(self, d) for d in base.extract_json(resp, None)
-        ]
+        return AppStatus(self, base.extract_json(resp, None))
 
     def packages_list(self, workspace, name, all=False):
         self._ensure_not_empty(workspace=workspace, name=name)

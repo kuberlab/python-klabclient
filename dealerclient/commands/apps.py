@@ -163,17 +163,40 @@ def format_status(status=None, lister=False):
     # },
     columns = ('Name', 'Status', 'Type',)
     data = (
-        status.name,
-        status.status,
-        status.type,
+        status.get('name'),
+        status.get('status'),
+        status.get('type'),
     )
 
     if not lister:
         columns += ('Reason', 'Resources',)
         data += (
-            status.reason,
-            json.dumps(status.resource_states, indent=4),
+            status.get('reason'),
+            json.dumps(status.get('resource_states'), indent=4),
         )
+
+    return columns, data
+
+
+def format_health(health=None):
+    # "containers_count": 2,
+    # "gpu_used": 0,
+    # "health": "Normal",
+    # "health_error": "",
+    # "name": "taskrun-tensorflow",
+    # "task_count": 0,
+    # "updated_at": "2018-01-23T09:35:51",
+    # "workspace": "kuberlab-demo",
+    # "workspace_id": "21"
+    columns = ('Name', 'Containers', 'Health', 'Error', 'Tasks', 'GPU')
+    data = (
+        health.name,
+        health.containers_count,
+        health.health,
+        health.health_error,
+        health.task_count,
+        health.gpu_used,
+    )
 
     return columns, data
 
@@ -357,7 +380,51 @@ class StatusList(base.DealerLister):
         dealer_client = self.app.client
         status = dealer_client.apps.status(args.workspace, args.name)
 
-        return status
+        return status.component_states
+
+
+class Health(show.ShowOne):
+    """Show app overall health."""
+
+    def get_parser(self, prog_name):
+        parser = super(Health, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        status = dealer_client.apps.status(args.workspace, args.name)
+
+        return format_health(status)
+
+
+class HealthList(base.DealerLister):
+    """Show app status component list."""
+
+    def _get_format_function(self):
+        return format_health
+
+    def get_parser(self, prog_name):
+        parser = super(HealthList, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+
+        return parser
+
+    @base.workspace_aware
+    def _get_resources(self, args):
+        dealer_client = self.app.client
+        given_apps = dealer_client.apps.list(args.workspace)
+
+        health_list = []
+        for app in given_apps:
+            if app.Enabled:
+                s = dealer_client.apps.status(args.workspace, app.Name)
+                health_list.append(s)
+
+        return health_list
 
 
 class StatusGet(show.ShowOne):
@@ -376,8 +443,8 @@ class StatusGet(show.ShowOne):
         dealer_client = self.app.client
         statuses = dealer_client.apps.status(args.workspace, args.app)
 
-        for status in statuses:
-            if status.name == args.name:
+        for status in statuses.component_states:
+            if status.get('name') == args.name:
                 return format_status(status, lister=False)
 
         raise exceptions.DealerClientException(
