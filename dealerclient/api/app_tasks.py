@@ -45,6 +45,9 @@ class AppTask(base.Resource):
         if hasattr(self, 'config'):
             self.config_raw = self.config
             self.config = yaml.safe_load(self.config_raw)
+        if hasattr(self, 'app_config'):
+            self.app_config_raw = self.app_config
+            self.app_config = yaml.safe_load(self.app_config_raw)
 
         if not hasattr(self, 'status'):
             self.status = 'undefined'
@@ -75,7 +78,7 @@ class AppTask(base.Resource):
 
     def start(self):
         task = self.manager.create(
-            self.workspace, self.app, self.name, self.config
+            self.workspace, self.app, self.name, self.app_config
         )
         return self._update_attrs(task)
 

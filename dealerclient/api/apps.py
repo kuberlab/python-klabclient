@@ -27,6 +27,7 @@ class App(base.Resource):
 
         if hasattr(self, 'Configuration'):
             self.config = self.Configuration
+            self.full_config = data
 
     def get_sources(self):
         if not self.config:
@@ -45,6 +46,7 @@ class App(base.Resource):
             task_dict = {
                 'app': self.Name,
                 'config': yaml.safe_dump(t),
+                'app_config': yaml.safe_dump(self.full_config),
                 'name': t.get('name'),
                 'workspace': self.WorkspaceName
             }

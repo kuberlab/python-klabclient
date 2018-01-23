@@ -234,6 +234,7 @@ class Run(show.ShowOne):
         app = dealer_client.apps.get(args.workspace, args.app)
 
         task = app.get_config_task(args.name)
+        print(task.app_config)
         task.start()
 
         if args.wait:
