@@ -68,6 +68,44 @@ class App(base.Resource):
             'App task [name=%s] not found.' % name
         )
 
+    def set_config_task(self, task_config):
+        if not isinstance(task_config, dict):
+            raise exceptions.DealerClientException(
+                'App task config must be dict, not %s.'
+                % task_config.__class__.__name__
+            )
+        name = task_config.get('name')
+        if not name:
+            raise exceptions.DealerClientException(
+                'App task config name required, missing "name" key.'
+            )
+        # Check if task exists
+        try:
+            self.get_config_task(name)
+        except exceptions.DealerClientException:
+            # Task doesn't exist. Add a new task.
+            self.config['spec']['tasks'].append(task_config)
+        else:
+            # Replace task.
+            tasks = self.config['spec']['tasks']
+            self.config['spec']['tasks'] = [
+                task_config if x['name'] == name else x for x in tasks
+            ]
+
+        return self.update_with_config(self.config)
+
+    def update_with_config(self, config):
+        if not isinstance(config, dict):
+            raise exceptions.DealerClientException(
+                'App config must be dict, not %s.'
+                % config.__class__.__name__
+            )
+
+        self.full_config['Configuration'] = config
+        return self.manager.update(
+            self.WorkspaceName, self.Name, self.full_config
+        )
+
     def upload_data(self, source_name, data, target_path):
         url = (
             '/workspace/%s/application/%s/upload'
@@ -197,6 +235,12 @@ class AppManager(base.ResourceManager):
         self._ensure_not_empty(workspace=workspace, name=name)
         url = '/workspace/%s/application/%s/enable' % (workspace, name)
         return self._create(url, {})
+
+    def update(self, workspace, name, config):
+        # PUT /workspace/{workspace}/application/{application}
+        self._ensure_not_empty(workspace=workspace, name=name)
+        url = '/workspace/%s/application/%s' % (workspace, name)
+        return self._update(url, config)
 
     def get_destinations(self, workspace):
         self._ensure_not_empty(workspace=workspace)

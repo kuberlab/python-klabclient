@@ -325,8 +325,10 @@ class DealerShell(app.App):
             'app-health-list': apps.HealthList,
 
             'app-config': apps.GetConfig,
+            'app-config-set': apps.SetConfig,
             'app-config-task-list': apps.ConfigTasks,
             'app-config-task-get': apps.ConfigTask,
+            'app-config-task-set': apps.ConfigTaskSet,
             'app-install': apps.Install,
             'app-delete': apps.Delete,
             'app-enable': apps.Enable,
@@ -340,7 +342,6 @@ class DealerShell(app.App):
             'app-task-pods': app_tasks.GetPods,
             'app-task-logs': app_tasks.GetLogs,
             'app-task-run': app_tasks.Run,
-            'app-task-create': app_tasks.Create,
             'app-task-delete': app_tasks.Delete,
 
             'shared-cluster-available-list': sharedclusters.ListAvailable,

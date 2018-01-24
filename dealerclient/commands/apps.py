@@ -679,7 +679,70 @@ class GetConfig(command.Command):
         dealer_client = self.app.client
         app = dealer_client.apps.get(args.workspace, args.name)
 
-        self.app.stdout.write(yaml.safe_dump(app.Configuration, default_flow_style=False))
+        self.app.stdout.write(
+            yaml.safe_dump(
+                app.Configuration,
+                default_flow_style=False
+            )
+        )
+
+
+class ConfigTaskSet(command.Command):
+    """Show specific task from app config."""
+
+    def get_parser(self, prog_name):
+        parser = super(ConfigTaskSet, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('app', help='App name.')
+        parser.add_argument(
+             'config',
+             metavar='<task.yaml>',
+             help='Path to task config yaml.',
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        app = dealer_client.apps.get(args.workspace, args.app)
+
+        config = yaml.safe_load(open(args.config))
+
+        updated_app = app.set_config_task(config)
+        task_config = updated_app.get_config_task(config['name'])
+        self.app.stdout.write(task_config.to_dict()['config'])
+
+
+class SetConfig(command.Command):
+    """Show specific app config."""
+
+    def get_parser(self, prog_name):
+        parser = super(SetConfig, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='App name.')
+        parser.add_argument(
+            'config',
+            metavar='<app-config.yaml>',
+            help='Path to app config yaml.',
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+        config = yaml.safe_load(open(args.config))
+
+        app = dealer_client.apps.get(args.workspace, args.name)
+        updated_app = app.update_with_config(config)
+
+        self.app.stdout.write(
+            yaml.safe_dump(
+                updated_app.Configuration,
+                default_flow_style=False
+            )
+        )
 
 
 class Install(charts.Install):

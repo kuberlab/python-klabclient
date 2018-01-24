@@ -148,36 +148,6 @@ class GetLogs(command.Command):
         self.app.stdout.write('\n')
 
 
-class Create(show.ShowOne):
-    """Create new app_task."""
-
-    def get_parser(self, prog_name):
-        parser = super(Create, self).get_parser(prog_name)
-        # workspace, name, display_name=None,
-        # env=None, repo_url=None, repo_dir=None
-        base.add_workspace_arg(parser)
-        parser.add_argument('app', help='App name.')
-        parser.add_argument('name', help='Task name.')
-        # parser.add_argument(
-        #     '--config',
-        #     help='Optional path to task config.',
-        #     nargs='?'
-        # )
-
-        return parser
-
-    @base.workspace_aware
-    def take_action(self, args):
-        dealer_client = self.app.client
-        app_task = dealer_client.app_tasks.create(
-            args.workspace,
-            args.app,
-            args.name,
-        )
-
-        return format(app_task)
-
-
 class Delete(command.Command):
     """Delete app_task."""
 
