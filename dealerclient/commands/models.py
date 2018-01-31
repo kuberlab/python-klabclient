@@ -129,7 +129,7 @@ class Create(show.ShowOne):
             args.name,
             display_name=args.display_name,
             picture=args.picture,
-            published=args.published,
+            published=args.publish,
         )
 
         return format(model)
@@ -161,6 +161,35 @@ class Delete(command.Command):
             "Request to delete model %s has been accepted.",
             "Unable to delete the specified model(s)."
         )
+
+
+class Upload(show.ShowOne):
+    """Upload model."""
+
+    def get_parser(self, prog_name):
+        parser = super(Upload, self).get_parser(prog_name)
+        base.add_workspace_arg(parser)
+        parser.add_argument('name', help='Name of model.')
+        parser.add_argument('version', help='Model version.')
+        parser.add_argument(
+            'path',
+            help=(
+                'Path to model. It is either '
+                '.tar.gz file or path to directory.'
+            )
+        )
+
+        return parser
+
+    @base.workspace_aware
+    def take_action(self, args):
+        dealer_client = self.app.client
+
+        m = dealer_client.models.upload(
+            args.workspace, args.name, args.version, args.path
+        )
+
+        return format(m)
 
 
 class Update(show.ShowOne):

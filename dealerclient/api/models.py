@@ -70,8 +70,8 @@ class ModelManager(base.ResourceManager):
         self._delete(url)
 
     def upload(self, workspace, name, version, path):
-        url = '/workspace/%s/mlmodels/%s/versions/%s/upload' % (
-            workspace, name, version
+        url = '%s/workspace/%s/mlmodels/%s/versions/%s/upload' % (
+            self.http_client.base_url, workspace, name, version
         )
 
         stream = utils.stream_targz(path)
@@ -84,3 +84,7 @@ class ModelManager(base.ResourceManager):
 
         if resp.status_code >= 400:
             self._raise_api_exception(resp)
+
+        return self.resource_class(
+            self, base.extract_json(resp, response_key=None)
+        )

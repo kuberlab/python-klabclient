@@ -305,6 +305,7 @@ class DealerShell(app.App):
             'model-list': models.List,
             'model-update': models.Update,
             'model-delete': models.Delete,
+            'model-upload': models.Upload,
 
             'org-list': organizations.List,
             'org-get': organizations.Get,
