@@ -17,6 +17,18 @@ pip install git+https://github.com/kuberlab/python-dealerclient.git
 ```
 
 
+Install in virtual environment:
+
+
+```bash
+virtualenv venv
+cd venv
+bin/pip install git+https://github.com/kuberlab/python-dealerclient.git
+```
+
+* `dealer` console command will be accessed from `venv/bin/dealer` path.
+
+
 Uninstall:
 
 ```bash
