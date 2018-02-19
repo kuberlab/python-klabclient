@@ -7,14 +7,16 @@ Developer installation:
 ```bash
 git clone https://github.com/kuberlab/python-dealerclient
 cd python-dealerclient
-pip install -e .
+pip install -e . 
 ```
+* for MacOS add --ignore-installed six at the end of the command line
     
 User installation:
 
 ```bash
 pip install git+https://github.com/kuberlab/python-dealerclient.git
 ```
+* for MacOS add --ignore-installed six at the end of the command line
 
 
 Install in virtual environment:
