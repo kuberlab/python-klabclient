@@ -17,11 +17,13 @@ pip install git+https://github.com/kuberlab/python-dealerclient.git
 ```
 
 
-Uninstall
+Uninstall:
 
 ```bash
 pip uninstall python-dealerclient
 ```
+
+* Also, if it is required, delete file `~/.kuberlab/config`.
 
 ## Usage
 
