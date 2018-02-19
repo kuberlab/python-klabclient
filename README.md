@@ -29,7 +29,7 @@ bin/pip install git+https://github.com/kuberlab/python-dealerclient.git
 * `dealer` console command will be accessed from `venv/bin/dealer` path.
 
 
-Uninstall:
+## Uninstall:
 
 ```bash
 pip uninstall python-dealerclient
