@@ -16,6 +16,13 @@ User installation:
 pip install git+https://github.com/kuberlab/python-dealerclient.git
 ```
 
+
+Uninstall
+
+```bash
+pip uninstall python-dealerclient
+```
+
 ## Usage
 
 #### Use config for auth (default location is *~/.kuberlab/config*)
