@@ -99,7 +99,7 @@ class ChartManager(base.ResourceManager):
         }
 
         if project:
-            install_chart_request["project_name"] =project
+            install_chart_request["project_name"] = project
 
         if isinstance(values, dict):
             install_chart_request['values_yaml'] = yaml.safe_dump(values)
