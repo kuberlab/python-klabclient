@@ -387,7 +387,6 @@ class Install(show.ShowOne):
         )
         parser.add_argument(
             '--project',
-            required=True,
             help='Project name.'
         )
         parser.add_argument(

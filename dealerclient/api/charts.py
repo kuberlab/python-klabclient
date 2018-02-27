@@ -89,15 +89,17 @@ class ChartManager(base.ResourceManager):
         return self._create(url, body)
 
     def install(self, from_workspace, to_workspace, chart_name,
-                project, app_name, values, version='latest',
+                app_name, values, project=None, version='latest',
                 cluster_name=None, shared_cluster_id=None,
                 cluster_id=None, env="master"):
         install_chart_request = {
             "target_application": app_name,
             "environment": env,
-            "project_name": project,
             "workspace_name": to_workspace,
         }
+
+        if project:
+            install_chart_request["project_name"] =project
 
         if isinstance(values, dict):
             install_chart_request['values_yaml'] = yaml.safe_dump(values)
