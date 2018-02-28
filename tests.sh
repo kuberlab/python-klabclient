@@ -1,1 +1,1 @@
-nosetests -sv dealerclient/tests
+nosetests -sv klabclient/tests
