@@ -13,7 +13,7 @@ DEFAULT_LIMIT = 100
 
 
 @six.add_metaclass(abc.ABCMeta)
-class DealerLister(lister.Lister):
+class KuberlabLister(lister.Lister):
     @abc.abstractmethod
     def _get_format_function(self):
         raise NotImplementedError

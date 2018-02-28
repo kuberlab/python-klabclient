@@ -109,7 +109,7 @@ def format_version(v=None):
     return columns, data
 
 
-class Catalog(base.DealerLister):
+class Catalog(base.KuberlabLister):
     """List charts using catalog."""
 
     def _get_format_function(self):
@@ -174,7 +174,7 @@ class List(Catalog):
         )
 
 
-class ListVersions(base.DealerLister):
+class ListVersions(base.KuberlabLister):
     """List charts in the specific workspace."""
 
     def _get_format_function(self):

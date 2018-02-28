@@ -27,7 +27,7 @@ def do_action_on_many(action, resources, success_msg, error_msg):
             print(e)
 
     if failure_flag:
-        raise exceptions.DealerClientException(error_msg)
+        raise exceptions.KuberlabClientException(error_msg)
 
 
 def load_content(content):

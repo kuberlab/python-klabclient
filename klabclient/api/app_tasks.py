@@ -9,7 +9,7 @@ from klabclient import utils
 def build_aware(func):
     def decorator(self, *args, **kwargs):
         if not hasattr(self, 'build'):
-            raise exceptions.DealerClientException('Task has no build yet')
+            raise exceptions.KuberlabClientException('Task has no build yet')
         return func(self, *args, **kwargs)
     return decorator
 

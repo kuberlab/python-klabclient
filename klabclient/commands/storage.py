@@ -39,7 +39,7 @@ def format_storage(storage=None, lister=False):
     return columns, data
 
 
-class List(base.DealerLister):
+class List(base.KuberlabLister):
     """List all available storage for cluster."""
 
     def _get_format_function(self):
@@ -86,6 +86,6 @@ class Get(show.ShowOne):
             if st.Name == args.name:
                 return format_storage(st)
 
-        raise exceptions.DealerClientException(
+        raise exceptions.KuberlabClientException(
             'Storage "%s" not found in storage list.' % args.name
         )

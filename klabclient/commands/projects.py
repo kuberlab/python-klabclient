@@ -47,7 +47,7 @@ def format(project=None, lister=False):
     return columns, data
 
 
-class List(base.DealerLister):
+class List(base.KuberlabLister):
     """List all projects in the workspace."""
 
     def _get_format_function(self):

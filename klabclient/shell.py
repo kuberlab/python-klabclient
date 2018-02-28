@@ -1,6 +1,6 @@
 
 """
-Command-line interface to the Dealer APIs
+Command-line interface to the Kuberlab APIs
 """
 
 import argparse

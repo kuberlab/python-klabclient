@@ -233,7 +233,7 @@ def format_package(package=None, lister=False):
     return columns, data
 
 
-class List(base.DealerLister):
+class List(base.KuberlabLister):
     """List all apps in the workspace."""
 
     def _get_format_function(self):
@@ -306,7 +306,7 @@ class PackageInstall(command.Command):
             self.app.stdout.write(line + '\n')
 
 
-class PackageList(base.DealerLister):
+class PackageList(base.KuberlabLister):
     """Show app status component list."""
 
     def _get_format_function(self):
@@ -357,12 +357,12 @@ class PackageGet(show.ShowOne):
             if package.manager == args.manager:
                 return format_package(package, lister=False)
 
-        raise exceptions.DealerClientException(
+        raise exceptions.KuberlabClientException(
             'Manager "%s" not found in package manager list.' % args.manager
         )
 
 
-class StatusList(base.DealerLister):
+class StatusList(base.KuberlabLister):
     """Show app status component list."""
 
     def _get_format_function(self):
@@ -401,7 +401,7 @@ class Health(show.ShowOne):
         return format_health(status)
 
 
-class HealthList(base.DealerLister):
+class HealthList(base.KuberlabLister):
     """Show app status component list."""
 
     def _get_format_function(self):
@@ -447,7 +447,7 @@ class StatusGet(show.ShowOne):
             if status.get('name') == args.name:
                 return format_status(status, lister=False)
 
-        raise exceptions.DealerClientException(
+        raise exceptions.KuberlabClientException(
             'Component "%s" not found in status list.' % args.name
         )
 
@@ -488,7 +488,7 @@ class Enable(show.ShowOne):
         return format(app)
 
 
-class ConfigTasks(base.DealerLister):
+class ConfigTasks(base.KuberlabLister):
     """List tasks defined in app config."""
 
     def _get_format_function(self):
@@ -554,7 +554,7 @@ class Upload(command.Command):
         self.app.stdout.write('\n')
 
 
-class ListSources(base.DealerLister):
+class ListSources(base.KuberlabLister):
     """List all app sources."""
 
     def _get_format_function(self):
@@ -599,14 +599,14 @@ class GetSource(show.ShowOne):
                 found = source
 
         if not found:
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'App source [name=%s] not found.' % args.source
             )
 
         return format_source(found)
 
 
-class ListDestinations(base.DealerLister):
+class ListDestinations(base.KuberlabLister):
     """List app destinations (project and clusters)."""
 
     def _get_format_function(self):
@@ -657,7 +657,7 @@ class GetDestination(show.ShowOne):
                 found = dest
 
         if not found:
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'App destination [Type=%s, ID=%s] not found.'
                 % (args.type, args.id)
             )
@@ -695,9 +695,9 @@ class ConfigTaskSet(command.Command):
         base.add_workspace_arg(parser)
         parser.add_argument('app', help='App name.')
         parser.add_argument(
-             'config',
-             metavar='<task.yaml>',
-             help='Path to task config yaml.',
+            'config',
+            metavar='<task.yaml>',
+            help='Path to task config yaml.',
         )
 
         return parser

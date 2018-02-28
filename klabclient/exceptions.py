@@ -1,6 +1,6 @@
 
-class DealerClientException(Exception):
-    """Base Exception for Dealer client
+class KuberlabClientException(Exception):
+    """Base Exception for Kuberlab client
 
     To correctly use this class, inherit from it and define
     a 'message' and 'code' properties.
@@ -13,11 +13,20 @@ class DealerClientException(Exception):
 
     def __init__(self, message=message):
         self.message = message
-        super(DealerClientException, self).__init__(
+        super(KuberlabClientException, self).__init__(
             '%s: %s' % (self.code, self.message))
 
 
-class IllegalArgumentException(DealerClientException):
+class TimeoutError(KuberlabClientException):
+    message = "TimeoutError occurred"
+    code = "TIMEOUT_ERROR"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+
+
+class IllegalArgumentException(KuberlabClientException):
     message = "IllegalArgumentException occurred"
     code = "ILLEGAL_ARGUMENT_EXCEPTION"
 

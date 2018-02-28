@@ -48,7 +48,7 @@ def format(cluster=None, lister=False):
     return columns, data
 
 
-class ListAvailable(base.DealerLister):
+class ListAvailable(base.KuberlabLister):
     """List all available shared clusters."""
 
     def _get_format_function(self):
@@ -60,7 +60,7 @@ class ListAvailable(base.DealerLister):
         return klab_client.sharedclusters.list_available()
 
 
-class ListOwn(base.DealerLister):
+class ListOwn(base.KuberlabLister):
     """List all own shared clusters."""
 
     def _get_format_function(self):

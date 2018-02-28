@@ -45,7 +45,7 @@ def format(org=None, lister=False):
     return columns, data
 
 
-class List(base.DealerLister):
+class List(base.KuberlabLister):
     """List all organizations."""
 
     def _get_format_function(self):

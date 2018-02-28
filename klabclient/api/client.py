@@ -27,7 +27,7 @@ class Client(object):
         kuberlab_url = req.get('kuberlab_url')
 
         if kuberlab_url and not isinstance(kuberlab_url, six.string_types):
-            raise RuntimeError('Dealer url should be a string.')
+            raise RuntimeError('Kuberlab url should be a string.')
 
         if not kuberlab_url:
             kuberlab_url = _DEFAULT_KUBERLAB_URL
@@ -78,11 +78,11 @@ def create_session(base_url=_DEFAULT_KUBERLAB_URL, **kwargs):
             headers={'Content-Type': 'application/json'}
         )
         if resp.status_code != 200:
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'Invalid auth: %s.' % resp.content
             )
         return ses
 
-    raise exceptions.DealerClientException(
+    raise exceptions.KuberlabClientException(
         "Provide either token or username and password."
     )

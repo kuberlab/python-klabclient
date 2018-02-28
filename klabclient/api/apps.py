@@ -64,25 +64,25 @@ class App(base.Resource):
             if t.name == name:
                 return t
 
-        raise exceptions.DealerClientException(
+        raise exceptions.KuberlabClientException(
             'App task [name=%s] not found.' % name
         )
 
     def set_config_task(self, task_config):
         if not isinstance(task_config, dict):
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'App task config must be dict, not %s.'
                 % task_config.__class__.__name__
             )
         name = task_config.get('name')
         if not name:
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'App task config name required, missing "name" key.'
             )
         # Check if task exists
         try:
             self.get_config_task(name)
-        except exceptions.DealerClientException:
+        except exceptions.KuberlabClientException:
             # Task doesn't exist. Add a new task.
             self.config['spec']['tasks'].append(task_config)
         else:
@@ -96,7 +96,7 @@ class App(base.Resource):
 
     def update_with_config(self, config):
         if not isinstance(config, dict):
-            raise exceptions.DealerClientException(
+            raise exceptions.KuberlabClientException(
                 'App config must be dict, not %s.'
                 % config.__class__.__name__
             )

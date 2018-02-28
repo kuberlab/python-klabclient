@@ -57,7 +57,7 @@ def format_pod(pod=None):
     return columns, data
 
 
-class List(base.DealerLister):
+class List(base.KuberlabLister):
     """List all app_tasks in the workspace."""
 
     def _get_format_function(self):
@@ -99,7 +99,7 @@ class Get(show.ShowOne):
         return format(app_task)
 
 
-class GetPods(base.DealerLister):
+class GetPods(base.KuberlabLister):
     """Show specific app_task."""
 
     def _get_format_function(self):
