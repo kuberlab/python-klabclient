@@ -5,7 +5,7 @@
 * Search for needed chart in catalog (say, for **tensorflow**)
 
 ```
-$ dealer catalog --type mlapp-v2 --search tensorflow
+$ klab catalog --type mlapp-v2 --search tensorflow
 +------+--------------------+--------------------+----------+---------+----------------+
 | ID   | Name               | Display name       | Type     | Version | Workspace      |
 +------+--------------------+--------------------+----------+---------+----------------+
@@ -20,7 +20,7 @@ Exact name of needed chart is *tensorflow* which is located in workspace named *
 * Download values.yaml of that chart:
 
 ```bash
-$ dealer chart-values --workspace kuberlab-demo tensorflow > values.yaml
+$ klab chart-values --workspace kuberlab-demo tensorflow > values.yaml
 ```
 
 * See what we've got:
@@ -32,8 +32,8 @@ cat values.yaml
 * Now, we have to adjust values.yaml to fit our requirements. First, need to choose cluster storage. See shared cluster list:
 
 ```
-$ dealer cluster-list --workspace kuberlab-demo
-$ dealer cluster-list --workspace kuberlab-demo
+$ klab cluster-list --workspace kuberlab-demo
+$ klab cluster-list --workspace kuberlab-demo
 +---------------------------------------------+----------------+---------------------+
 | ClusterID                                   | ClusterType    | Name                |
 +---------------------------------------------+----------------+---------------------+
@@ -52,7 +52,7 @@ $ dealer cluster-list --workspace kuberlab-demo
 * Choose the storage: 
 
 ```
-$ dealer storage-list --workspace kuberlab-demo demotest/minikube
+$ klab storage-list --workspace kuberlab-demo demotest/minikube
 +-----------------+-----------------------------+
 | Type            | Name                        |
 +-----------------+-----------------------------+
@@ -79,7 +79,7 @@ storage:
 * See projects: 
 
 ```
-$ dealer project-list --workspace kuberlab-demo
+$ klab project-list --workspace kuberlab-demo
 +------+----------+--------------+------------------------------------+-------------+
 | ID   | Name     | Display name | Repository URL                     | Environment |
 +------+----------+--------------+------------------------------------+-------------+
@@ -91,14 +91,14 @@ $ dealer project-list --workspace kuberlab-demo
 * Pass that together to command *app-install*:
 
 ```bash
-dealer app-install --name tensorflow --chart-workspace kuberlab-demo --target-workspace kuberlab-demo \
+klab app-install --name tensorflow --chart-workspace kuberlab-demo --target-workspace kuberlab-demo \
    -app tensorflow-for-test --cluster-id shared/401 --project demotest --values values.yaml
 ```
 
 * Take a look what we've got:
 
 ```
-dealer app-list --workspace kuberlab-demo
+klab app-list --workspace kuberlab-demo
 +-------------------------+-------------------------+---------+----------+---------------+----------+
 | Name                    | Display name            | Enabled | Cluster  | Workspace     | Project  |
 +-------------------------+-------------------------+---------+----------+---------------+----------+
@@ -107,7 +107,7 @@ dealer app-list --workspace kuberlab-demo
 
 # See detailed info
 
-$ dealer app-get --workspace kuberlab-demo tensorflow-for-test
+$ klab app-get --workspace kuberlab-demo tensorflow-for-test
 +------------------------+---------------------+
 | Field                  | Value               |
 +------------------------+---------------------+
@@ -130,7 +130,7 @@ $ dealer app-get --workspace kuberlab-demo tensorflow-for-test
 
 # See application status
 
-$ dealer app-status-list --workspace kuberlab-demo tensorflow-for-test
+$ klab app-status-list --workspace kuberlab-demo tensorflow-for-test
 +---------------------------------+---------+------+
 | Name                            | Status  | Type |
 +---------------------------------+---------+------+
@@ -142,7 +142,7 @@ $ dealer app-status-list --workspace kuberlab-demo tensorflow-for-test
 * See available tasks in application config:
 
 ```
-$ dealer app-config-task-list --workspace kuberlab-demo tensorflow-for-test
+$ klab app-config-task-list --workspace kuberlab-demo tensorflow-for-test
 +--------------+
 | Name         |
 +--------------+
@@ -157,7 +157,7 @@ $ dealer app-config-task-list --workspace kuberlab-demo tensorflow-for-test
 * Let's run the first task, wait and watch for completion: 
 
 ```
-$ dealer app-task-run --workspace kuberlab-demo tensorflow-for-test prepare-data --wait --watch
+$ klab app-task-run --workspace kuberlab-demo tensorflow-for-test prepare-data --wait --watch
 <Task name=prepare-data build=1 status=Starting>
 <Task name=prepare-data build=1 status=Pending>
 +------------+-----------------------------+
@@ -178,7 +178,7 @@ $ dealer app-task-run --workspace kuberlab-demo tensorflow-for-test prepare-data
 
 ```
 # Retrieve task list
-$ dealer app-task-list --workspace kuberlab-demo tensorflow-for-test
+$ klab app-task-list --workspace kuberlab-demo tensorflow-for-test
 +------------------------+---------------------------------------+-------+-----------+-----------+
 | App                    | Name                                  | Build | Status    | Completed |
 +------------------------+---------------------------------------+-------+-----------+-----------+
@@ -186,7 +186,7 @@ $ dealer app-task-list --workspace kuberlab-demo tensorflow-for-test
 +------------------------+---------------------------------------+-------+-----------+-----------+
 
 # Retrieve pod list
-$ dealer app-task-pods --workspace kuberlab-demo tensorflow-for-test prepare-data 1
+$ klab app-task-pods --workspace kuberlab-demo tensorflow-for-test prepare-data 1
 +---------------------------------------------+--------+
 | Name                                        | Status |
 +---------------------------------------------+--------+
@@ -195,7 +195,7 @@ $ dealer app-task-pods --workspace kuberlab-demo tensorflow-for-test prepare-dat
 +---------------------------------------------+--------+
 
 # Retrieve logs
-$ dealer app-task-logs --workspace kuberlab-demo tensorflow-for-test prepare-data 1 tensorflow-for-test-prepare-data-upload-1-0
+$ klab app-task-logs --workspace kuberlab-demo tensorflow-for-test prepare-data 1 tensorflow-for-test-prepare-data-upload-1-0
 Uploading Data
 Done!!!
 

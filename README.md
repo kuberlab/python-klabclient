@@ -1,12 +1,12 @@
-# python-dealerclient
+# python-klabclient
 
 ## Installation
 
 Developer installation:
 
 ```bash
-git clone https://github.com/kuberlab/python-dealerclient
-cd python-dealerclient
+git clone https://github.com/kuberlab/python-klabclient
+cd python-klabclient
 pip install -e . 
 ```
 * for MacOS add --ignore-installed six at the end of the command line
@@ -14,7 +14,7 @@ pip install -e .
 User installation:
 
 ```bash
-pip install git+https://github.com/kuberlab/python-dealerclient.git
+pip install git+https://github.com/kuberlab/python-klabclient.git
 ```
 * for MacOS add --ignore-installed six at the end of the command line
 
@@ -25,16 +25,16 @@ Install in virtual environment:
 ```bash
 virtualenv venv
 cd venv
-bin/pip install git+https://github.com/kuberlab/python-dealerclient.git
+bin/pip install git+https://github.com/kuberlab/python-klabclient.git
 ```
 
-* `dealer` console command will be accessed from `venv/bin/dealer` path.
+* `klab` console command will be accessed from `venv/bin/klab` path.
 
 
 ## Uninstall:
 
 ```bash
-pip uninstall python-dealerclient
+pip uninstall python-klabclient
 ```
 
 * Also, if it is required, delete file `~/.kuberlab/config`.
@@ -57,19 +57,19 @@ EOF
 
 ```bash
 # Set token
-export DEALER_TOKEN=token
+export KUBERLAB_TOKEN=token
 # Or, use your login/password
-export DEALER_USERNAME=my@example.com
-export DEALER_PASSWORD=mypassword
+export KUBERLAB_USERNAME=my@example.com
+export KUBERLAB_PASSWORD=mypassword
 ```
 
 #### Call CLI or see help to take a look on a command list:
 
 ```bash
-dealer workspace-list
+klab workspace-list
 
 # See help
-dealer --help
+klab --help
 ```
 
 ## App installation example
@@ -81,16 +81,16 @@ See how to install a simple app - [App installation](App_installation.md)
 ## Usage as a python library
 
 ```python
-from dealerclient.api import client
+from klabclient.api import client
 
 # Init session
 ses = client.create_session(token='token') # Pick up default base_url
 # Or, use username and password
 # ses = client.create_session(username='username', password='password') # Pick up default base_url
 
-dealer = client.Client(session=ses) # Pick up default dealer_url
+klab = client.Client(session=ses) # Pick up default klab_url
 
-workspaces = dealer.workspaces.list()
+workspaces = klab.workspaces.list()
 # Print all workspace names
 print([w.Name for w in workspaces])
 ```
