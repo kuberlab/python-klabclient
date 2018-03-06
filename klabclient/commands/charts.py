@@ -18,9 +18,10 @@ def format_list(chart=None):
 
 
 def format(chart=None, lister=False):
+    print(chart)
     # "ID": "2651",
     # "Name": "zappos-ui",
-    # "Type": "app",
+    # "Interface": "app",
     # "Version": "1.0.0",
     # "DisplayName": "zappos-ui",
     # "Description": "Zappos UI Demo",
@@ -49,7 +50,7 @@ def format(chart=None, lister=False):
         'ID',
         'Name',
         'Display name',
-        'Type',
+        'Interface',
         'Version',
         'Workspace',
     )
@@ -59,7 +60,7 @@ def format(chart=None, lister=False):
             chart.ID,
             chart.Name,
             chart.DisplayName,
-            chart.Type,
+            chart.Interface,
             chart.Version,
             chart.WorkspaceName,
         )
@@ -115,18 +116,17 @@ class Catalog(base.KuberlabLister):
     def _get_format_function(self):
         return format_list
 
+    @property
+    def _catalog_function(self):
+        klab_client = self.app.client
+        return klab_client.charts.catalog
+
     def get_parser(self, prog_name):
         parser = super(Catalog, self).get_parser(prog_name)
 
         parser.add_argument(
             '--search',
             help='Elastic search by specified string.'
-        )
-        parser.add_argument(
-            '--type',
-            default='mlapp-v2',
-            choices=['app', 'mlapp-v2'],
-            help='Filter by type.'
         )
         parser.add_argument(
             '--page',
@@ -142,11 +142,8 @@ class Catalog(base.KuberlabLister):
         return parser
 
     def _get_resources(self, args):
-        klab_client = self.app.client
-
-        return klab_client.charts.catalog(
+        return self._catalog_function(
             args.search,
-            args.type,
             args.page,
             args.limit
         )
@@ -168,7 +165,6 @@ class List(Catalog):
         return klab_client.charts.list(
             args.workspace,
             args.search,
-            args.type,
             args.page,
             args.limit
         )
@@ -176,6 +172,12 @@ class List(Catalog):
 
 class ListVersions(base.KuberlabLister):
     """List charts in the specific workspace."""
+
+    @property
+    def _action_function(self):
+        klab_client = self.app.client
+
+        return klab_client.charts.list_versions
 
     def _get_format_function(self):
         return format_version
@@ -192,9 +194,7 @@ class ListVersions(base.KuberlabLister):
 
     @base.workspace_aware
     def _get_resources(self, args):
-        klab_client = self.app.client
-
-        return klab_client.charts.list_versions(
+        return self._action_function(
             args.workspace,
             args.name
         )
@@ -229,7 +229,12 @@ class Get(show.ShowOne):
 
 
 class GetValues(command.Command):
-    """Get specific chart by name."""
+    """Get specific chart values yaml."""
+
+    @property
+    def _action_function(self):
+        client = self.app.client
+        return client.apps.get_values
 
     def get_parser(self, prog_name):
         parser = super(GetValues, self).get_parser(prog_name)
@@ -238,19 +243,18 @@ class GetValues(command.Command):
             '--chart-version',
             dest='version',
             default='latest',
-            help='Chart version.'
+            help='Version.'
         )
         parser.add_argument(
             'name',
-            help='Chart name.'
+            help='Name.'
         )
 
         return parser
 
     @base.workspace_aware
     def take_action(self, args):
-        klab_client = self.app.client
-        values = klab_client.charts.get_values(
+        values = self._action_function(
             args.workspace, args.name, args.version
         )
 
@@ -261,6 +265,11 @@ class GetValues(command.Command):
 class GetYaml(command.Command):
     """Get Chart.yaml."""
 
+    @property
+    def _action_function(self):
+        client = self.app.client
+        return client.apps.get_yaml
+
     def get_parser(self, prog_name):
         parser = super(GetYaml, self).get_parser(prog_name)
         base.add_workspace_arg(parser)
@@ -268,19 +277,18 @@ class GetYaml(command.Command):
             '--chart-version',
             dest='version',
             default='latest',
-            help='Chart version.'
+            help='Version.'
         )
         parser.add_argument(
             'name',
-            help='Chart name.'
+            help='Name.'
         )
 
         return parser
 
     @base.workspace_aware
     def take_action(self, args):
-        klab_client = self.app.client
-        chart_yaml = klab_client.charts.get_yaml(
+        chart_yaml = self._action_function(
             args.workspace, args.name, args.version
         )
 
@@ -425,9 +433,14 @@ class Install(show.ShowOne):
 
         return parser
 
+    @property
+    def _install_function(self):
+        klab_client = self.app.client
+        return klab_client.charts.install
+
     @base.workspace_aware
     def take_action(self, args):
-        klab_client = self.app.client
+
         values = None
         if args.values:
             with open(args.values) as f:
@@ -436,7 +449,7 @@ class Install(show.ShowOne):
         # from_workspace, to_workspace, chart_name,
         #        project, app_name, values, version='latest',
         #        cluster_name=None, shared_cluster_id=None, env="master"
-        app = klab_client.charts.install(
+        app = self._install_function(
             args.chart_workspace,
             args.target_workspace,
             args.name,

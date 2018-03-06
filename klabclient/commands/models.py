@@ -4,6 +4,7 @@ from cliff import command
 from cliff import show
 
 from klabclient.commands import base
+from klabclient.commands import charts
 from klabclient import utils
 
 
@@ -51,6 +52,16 @@ def format(model=None, lister=False):
         data = (tuple('<none>' for _ in range(len(columns))),)
 
     return columns, data
+
+
+class Catalog(charts.Catalog):
+    @property
+    def _catalog_function(self):
+        client = self.app.client
+        return client.models.catalog
+
+    def _get_format_function(self):
+        return format_list
 
 
 class List(base.KuberlabLister):

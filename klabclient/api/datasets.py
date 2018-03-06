@@ -1,14 +1,13 @@
 
 from klabclient.api import base
-from klabclient import utils
 
 
-class Model(base.Resource):
-    resource_name = 'Model'
+class Dataset(base.Resource):
+    resource_name = 'Dataset'
 
 
-class ModelManager(base.ResourceManager):
-    resource_class = Model
+class DatasetManager(base.ResourceManager):
+    resource_class = Dataset
 
     def create(self, workspace, name, published=False,
                display_name=None, picture=None):
@@ -27,7 +26,7 @@ class ModelManager(base.ResourceManager):
             body['Published'] = published
 
         return self._create(
-            '/workspace/%s/mlmodel' % workspace,
+            '/workspace/%s/dataset' % workspace,
             body,
         )
 
@@ -44,50 +43,30 @@ class ModelManager(base.ResourceManager):
             body['DisplayName'] = display_name
 
         return self._update(
-            '/workspace/%s/mlmodel' % workspace,
+            '/workspace/%s/dataset' % workspace,
             body
         )
 
     def catalog(self, search=None, page=None, limit=None):
-        return self._catalog('/catalog/mlmodel', search, page, limit)
+        return self._catalog('/catalog/dataset', search, page, limit)
 
     def list(self, workspace):
         return self._list(
-            '/workspace/%s/mlmodel' % workspace, response_key=None
+            '/workspace/%s/dataset' % workspace, response_key=None
         )
 
     def get(self, workspace, name):
         self._ensure_not_empty(name=name)
 
         return self._get(
-            '/workspace/%s/mlmodel/%s' % (workspace, name)
+            '/workspace/%s/dataset/%s' % (workspace, name)
         )
 
     def delete(self, workspace, name, confirm=None):
         self._ensure_not_empty(name=name)
 
-        url = '/workspace/%s/mlmodel/%s' % (workspace, name)
+        url = '/workspace/%s/dataset/%s' % (workspace, name)
         if confirm:
             url += '?confirm=%s' % confirm
 
         self._delete(url)
-
-    def upload(self, workspace, name, version, path):
-        url = '%s/workspace/%s/mlmodel/%s/versions/%s/upload' % (
-            self.http_client.base_url, workspace, name, version
-        )
-
-        stream = utils.stream_targz(path)
-
-        resp = self.http_client.crud_provider.post(
-            url,
-            # data=form_data,
-            files={'model': ('%s.tar.gz' % name, stream)}
-        )
-
-        if resp.status_code >= 400:
-            self._raise_api_exception(resp)
-
-        return self.resource_class(
-            self, base.extract_json(resp, response_key=None)
-        )

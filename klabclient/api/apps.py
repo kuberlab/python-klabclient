@@ -1,6 +1,8 @@
 import json
 import yaml
 
+import six
+
 from klabclient.api import app_tasks
 from klabclient.api import base
 from klabclient.api import charts
@@ -160,6 +162,9 @@ class AppPackage(base.Resource):
 class AppManager(base.ResourceManager):
     resource_class = App
 
+    def catalog(self, search=None, page=None, limit=None):
+        return self._catalog('/catalog/chart-mlapp-v2', search, page, limit)
+
     def list(self, workspace):
         url = '/workspace/%s/application' % workspace
         return self._list(url, response_key=None)
@@ -254,18 +259,72 @@ class AppManager(base.ResourceManager):
             AppDestination(self, d) for d in base.extract_json(resp, None)
         ]
 
-    def install(self, from_workspace, to_workspace, chart_name,
-                project, app_name, values, version='latest',
-                cluster_name=None, shared_cluster_id=None, env="master"):
-        return charts.ChartManager(self.http_client).install(
-            from_workspace,
-            to_workspace,
-            chart_name,
-            project,
-            app_name,
-            values,
-            version,
-            cluster_name,
-            shared_cluster_id,
-            env
+    def get_yaml(self, workspace, chart_name, version=None):
+        url = '/workspace/%s/chart-mlapp-v2/%s' % (workspace, chart_name)
+
+        if not version:
+            version = 'latest'
+
+        url += '/versions/%s/yaml' % version
+
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return resp.text
+
+    def list_versions(self, workspace, chart_name):
+        url = (
+            '/workspace/%s/chart-mlapp-v2/%s/versions'
+            % (workspace, chart_name)
         )
+
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return [
+            charts.ChartVersion(self, v)
+            for v in base.extract_json(resp, None)
+        ]
+
+    def get_values(self, workspace, chart_name, version='latest'):
+        url = '/workspace/%s/chart-mlapp-v2/%s/versions/%s/values/yaml' % (
+            (workspace, chart_name, version)
+        )
+
+        resp = self.http_client.get(url)
+        if resp.status_code >= 400:
+            self._raise_api_exception(resp)
+
+        return resp.text
+
+    def install(self, from_workspace, to_workspace, chart_name,
+                app_name, values, project=None, version='latest',
+                cluster_name=None, shared_cluster_id=None,
+                cluster_id=None, env="master"):
+        install_chart_request = {
+            "target_application": app_name,
+            "environment": env,
+            "workspace_name": to_workspace,
+        }
+
+        if project:
+            install_chart_request["project_name"] = project
+
+        if isinstance(values, dict):
+            install_chart_request['values_yaml'] = yaml.safe_dump(values)
+        if isinstance(values, six.string_types):
+            install_chart_request['values_yaml'] = values
+
+        if cluster_id:
+            install_chart_request['cluster_id'] = cluster_id
+        elif cluster_name:
+            install_chart_request['clusters'] = [cluster_name]
+        elif shared_cluster_id:
+            install_chart_request['shared_cluster_id'] = shared_cluster_id
+
+        url = '/workspace/%s/chart-mlapp-v2/%s/versions/%s/install' % (
+            from_workspace, chart_name, version
+        )
+        return self._create(url, install_chart_request)

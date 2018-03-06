@@ -233,6 +233,29 @@ def format_package(package=None, lister=False):
     return columns, data
 
 
+def format_catalog_app(app=None):
+    columns = ('ID', 'Name', 'Display Name', 'Published', 'Workspace Name',)
+    data = (
+        app.ID,
+        app.Name,
+        app.DisplayName,
+        app.Published,
+        app.WorkspaceName,
+    )
+
+    return columns, data
+
+
+class Catalog(charts.Catalog):
+    @property
+    def _catalog_function(self):
+        client = self.app.client
+        return client.apps.catalog
+
+    def _get_format_function(self):
+        return format_catalog_app
+
+
 class List(base.KuberlabLister):
     """List all apps in the workspace."""
 
@@ -746,7 +769,33 @@ class SetConfig(command.Command):
 
 
 class Install(charts.Install):
-    pass
+    @property
+    def _install_function(self):
+        client = self.app.client
+        return client.apps.install
+
+
+class ListVersions(charts.ListVersions):
+    """List apps in the specific workspace."""
+
+    @property
+    def _action_function(self):
+        client = self.app.client
+        return client.apps.list_versions
+
+
+class GetYaml(charts.GetYaml):
+    @property
+    def _action_function(self):
+        client = self.app.client
+        return client.apps.get_yaml
+
+
+class GetValues(charts.GetValues):
+    @property
+    def _action_function(self):
+        client = self.app.client
+        return client.apps.get_values
 
 
 class Delete(command.Command):

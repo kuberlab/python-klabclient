@@ -2,6 +2,11 @@
 import copy
 import json
 
+import six
+
+
+urlparse = six.moves.urllib.parse
+
 
 class Resource(object):
     resource_name = 'Something'
@@ -54,6 +59,27 @@ class ResourceManager(object):
 
     def __init__(self, http_client):
         self.http_client = http_client
+
+    def _catalog(self, url, search=None, page=None, limit=None):
+        qparams = {}
+
+        if search:
+            qparams['search'] = search
+
+        if limit:
+            qparams['limit'] = limit
+
+        if page:
+            qparams['page'] = page
+
+        query_string = (
+            "?%s" % urlparse.urlencode(list(qparams.items()))
+            if qparams else ""
+        )
+
+        return self._list(
+            '%s%s' % (url, query_string), response_key=None
+        )
 
     def find(self, **kwargs):
         return [i for i in self.list() if _check_items(i, kwargs.items())]

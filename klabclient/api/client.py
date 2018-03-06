@@ -6,6 +6,7 @@ from klabclient.api import app_tasks
 from klabclient.api import apps
 from klabclient.api import charts
 from klabclient.api import clusters
+from klabclient.api import datasets
 from klabclient.api import httpclient
 from klabclient.api import models
 from klabclient.api import organizations
@@ -40,16 +41,17 @@ class Client(object):
 
         # Create all resource managers.
 
-        self.workspaces = workspaces.WorkspaceManager(http_client)
-        self.organizations = organizations.OrganizationManager(http_client)
-        self.projects = projects.ProjectManager(http_client)
         self.apps = apps.AppManager(http_client)
         self.app_tasks = app_tasks.AppTaskManager(http_client)
-        self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
         self.charts = charts.ChartManager(http_client)
         self.clusters = clusters.ClusterManager(http_client)
-        self.storage = storage.StorageManager(http_client)
+        self.datasets = datasets.DatasetManager(http_client)
         self.models = models.ModelManager(http_client)
+        self.organizations = organizations.OrganizationManager(http_client)
+        self.projects = projects.ProjectManager(http_client)
+        self.sharedclusters = sharedclusters.SharedClusterManager(http_client)
+        self.storage = storage.StorageManager(http_client)
+        self.workspaces = workspaces.WorkspaceManager(http_client)
 
 
 def create_session(base_url=_DEFAULT_KUBERLAB_URL, **kwargs):

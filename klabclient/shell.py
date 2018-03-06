@@ -20,6 +20,7 @@ from klabclient.commands import app_tasks
 from klabclient.commands import apps
 from klabclient.commands import charts
 from klabclient.commands import clusters
+from klabclient.commands import datasets
 from klabclient.commands import models
 from klabclient.commands import organizations
 from klabclient.commands import projects
@@ -332,12 +333,17 @@ class KuberlabShell(app.App):
             'app-health': apps.Health,
             'app-health-list': apps.HealthList,
 
+            # Polymorphic function
+            'app-version-list': apps.ListVersions,
+            'app-get-yaml': apps.GetYaml,
+            'app-values': apps.GetValues,
+            'app-install': apps.Install,
+
             'app-config': apps.GetConfig,
             'app-config-set': apps.SetConfig,
             'app-config-task-list': apps.ConfigTasks,
             'app-config-task-get': apps.ConfigTask,
             'app-config-task-set': apps.ConfigTaskSet,
-            'app-install': apps.Install,
             'app-delete': apps.Delete,
             'app-enable': apps.Enable,
             'app-disable': apps.Disable,
@@ -360,6 +366,10 @@ class KuberlabShell(app.App):
             'shared-cluster-own-delete': sharedclusters.DeleteOwn,
 
             'catalog': charts.Catalog,
+            'catalog charts': charts.Catalog,
+            'catalog models': models.Catalog,
+            'catalog datasets': datasets.Catalog,
+            'catalog apps': apps.Catalog,
             'chart-list': charts.List,
             'chart-download': charts.Download,
             'chart-version-list': charts.ListVersions,
