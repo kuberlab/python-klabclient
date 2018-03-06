@@ -27,7 +27,7 @@ class ModelManager(base.ResourceManager):
             body['Published'] = published
 
         return self._create(
-            '/workspace/%s/mlmodels' % workspace,
+            '/workspace/%s/mlmodel' % workspace,
             body,
         )
 
@@ -44,33 +44,33 @@ class ModelManager(base.ResourceManager):
             body['DisplayName'] = display_name
 
         return self._update(
-            '/workspace/%s/mlmodels' % workspace,
+            '/workspace/%s/mlmodel' % workspace,
             body
         )
 
     def list(self, workspace):
         return self._list(
-            '/workspace/%s/mlmodels' % workspace, response_key=None
+            '/workspace/%s/mlmodel' % workspace, response_key=None
         )
 
     def get(self, workspace, name):
         self._ensure_not_empty(name=name)
 
         return self._get(
-            '/workspace/%s/mlmodels/%s' % (workspace, name)
+            '/workspace/%s/mlmodel/%s' % (workspace, name)
         )
 
     def delete(self, workspace, name, confirm=None):
         self._ensure_not_empty(name=name)
 
-        url = '/workspace/%s/mlmodels/%s' % (workspace, name)
+        url = '/workspace/%s/mlmodel/%s' % (workspace, name)
         if confirm:
             url += '?confirm=%s' % confirm
 
         self._delete(url)
 
     def upload(self, workspace, name, version, path):
-        url = '%s/workspace/%s/mlmodels/%s/versions/%s/upload' % (
+        url = '%s/workspace/%s/mlmodel/%s/versions/%s/upload' % (
             self.http_client.base_url, workspace, name, version
         )
 
