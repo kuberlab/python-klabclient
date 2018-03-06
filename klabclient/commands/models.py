@@ -55,6 +55,8 @@ def format(model=None, lister=False):
 
 
 class Catalog(charts.Catalog):
+    """List models from catalog"""
+
     @property
     def _catalog_function(self):
         client = self.app.client

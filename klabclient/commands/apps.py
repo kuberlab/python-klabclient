@@ -247,6 +247,8 @@ def format_catalog_app(app=None):
 
 
 class Catalog(charts.Catalog):
+    """List machine learning applications from catalog"""
+
     @property
     def _catalog_function(self):
         client = self.app.client
