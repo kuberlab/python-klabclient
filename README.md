@@ -14,7 +14,7 @@ pip install -e .
 User installation:
 
 ```bash
-pip install git+https://github.com/kuberlab/python-klabclient.git
+pip install python-klabclient
 ```
 * for MacOS add --ignore-installed six at the end of the command line
 
@@ -25,7 +25,7 @@ Install in virtual environment:
 ```bash
 virtualenv venv
 cd venv
-bin/pip install git+https://github.com/kuberlab/python-klabclient.git
+bin/pip install python-klabclient
 ```
 
 * `klab` console command will be accessed from `venv/bin/klab` path.
