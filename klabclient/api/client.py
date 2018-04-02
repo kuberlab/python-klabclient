@@ -68,8 +68,12 @@ def create_session(base_url=_DEFAULT_KUBERLAB_URL, **kwargs):
     token = kwargs.get('token')
 
     ses = requests.Session()
+    insecure = kwargs.pop('insecure')
+
+    if insecure is not None:
+        ses.verify = not bool(insecure)
+
     if token:
-        ses = requests.Session()
         ses.headers['Authorization'] = 'Bearer %s' % token
         return ses
     elif username and password:
@@ -77,7 +81,8 @@ def create_session(base_url=_DEFAULT_KUBERLAB_URL, **kwargs):
         resp = ses.post(
             auth_url,
             json={'LoginOrEmail': username, 'Password': password},
-            headers={'Content-Type': 'application/json'}
+            headers={'Content-Type': 'application/json'},
+            verify=False,
         )
         if resp.status_code != 200:
             raise exceptions.KuberlabClientException(
