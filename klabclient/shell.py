@@ -233,7 +233,7 @@ class KuberlabShell(app.App):
             '--insecure',
             action='store_true',
             dest='insecure',
-            default=env('KUBERLAB_CLIENT_INSECURE', default=False),
+            default=env('KUBERLAB_INSECURE', default=False),
             help='Disables SSL/TLS certificate verification '
                  '(Env: KUBERLAB_CLIENT_INSECURE)'
         )
